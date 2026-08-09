@@ -86,6 +86,11 @@ body.night .settings-tab.on{color:#221507}
 
 /* ── SVG 圖示系統（v3.6）：尺寸吃 font-size、顏色吃 currentColor ── */
 svg.ic{width:1.05em;height:1.05em;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;vertical-align:-0.14em;flex-shrink:0;pointer-events:none}
+/* v3.6b 上色修正：磚牆按鈕無 color 會掉到 UA 預設黑（emoji 時代自帶色沒露餡）；
+   區塊/頁/統計標題與匯出入列的圖示統一金色點綴，對齊審稿預覽 */
+.app-tile{color:var(--ink)}
+.app-tile-icon,.sec-title .ic,#settings-page .settings-sec-title .ic,
+.page-title .ic,.stats-sec-title .ic,.io-ico .ic,.recent-card .ic{color:var(--gold)}
 
 /* ── RESET ── */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}

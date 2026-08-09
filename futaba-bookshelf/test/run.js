@@ -50,6 +50,9 @@ chk('v3.6：FT.APPS 改用具名圖示', (() => {
   return p.includes("icon:'home'") && p.includes("icon:'library'") && !/icon:'[^a-z]/.test(p);
 })());
 chk('v3.6：FT.icon 助手存在', read('assets/js/storage.js').includes('FT.icon'));
+chk('v3.6b：磚牆按鈕 color 明確（不掉 UA 黑）', css.includes('.app-tile{color:var(--ink)}'));
+chk('v3.6b：圖示金色點綴規則齊備', css.includes('.app-tile-icon,.sec-title .ic'));
+chk('v3.6b：齒輪已圓角化（Q 貝茲曲線）', /id="i-gear"[^>]*><path d="M[\d. ]+Q/.test(html));
 chk('v3.1：黏頂面板必須低於側欄', /\.settings-tabs\{[^}]*z-index:10/.test(css) && /\.lib-controls\{[^}]*z-index:10/.test(css) && /#sidebar\{[^}]*z-index:15/.test(css));
 chk('v3.1c：黏頂面板有金框（不像破圖）', /\.settings-tabs\{[^}]*border:1px solid var\(--gold-dim\)/.test(css) && /\.lib-controls\{[^}]*border:1px solid var\(--gold-dim\)/.test(css));
 chk('v3.1：功能標題底線在整列（不被排序鈕截斷）', /\.apps-title-row\{[^}]*border-bottom/.test(css) && css.includes('.apps-title-row .page-title{border-bottom:none'));
