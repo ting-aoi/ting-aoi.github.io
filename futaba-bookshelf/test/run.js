@@ -30,6 +30,15 @@ chk('v3.0：Playfair 全站退役', !css.includes('Playfair') && !html.includes(
 chk('v3.0：手寫字體與 Caveat 已載入', css.includes('LXGW+WenKai+TC') && css.includes('Caveat'));
 chk('v3.0：頂欄側欄用皮革變數（日夜恆深）', css.includes('--leather') && (css.match(/background:var\(--leather\)/g) || []).length >= 2);
 chk('v3.0：reduced-motion 總開關', css.includes('prefers-reduced-motion'));
+chk('v3.5：動效 token 齊備', css.includes('--dur-fast') && css.includes('--ease-spring'));
+chk('v3.5：transition:all 清零（防掉幀）', !css.includes('transition:all'));
+chk('v3.5：切頁過場只動 transform/opacity', (() => {
+  const kf = (css.match(/@keyframes pageEnter\{[^}]*\}[^}]*\}/) || [''])[0];
+  return kf.includes('translateY') && kf.includes('opacity')
+    && !/width|height|left:|top:|margin/.test(kf);
+})());
+chk('v3.5：統一按下回饋', css.includes(':active{transform:scale(0.965)}'));
+chk('v3.5：排序模式按下不縮（拖曳引擎接管 transform）', css.includes('.apps-grid.sorting .app-tile:active{transform:none}'));
 chk('v3.1：黏頂面板必須低於側欄', /\.settings-tabs\{[^}]*z-index:10/.test(css) && /\.lib-controls\{[^}]*z-index:10/.test(css) && /#sidebar\{[^}]*z-index:15/.test(css));
 chk('v3.1c：黏頂面板有金框（不像破圖）', /\.settings-tabs\{[^}]*border:1px solid var\(--gold-dim\)/.test(css) && /\.lib-controls\{[^}]*border:1px solid var\(--gold-dim\)/.test(css));
 chk('v3.1：功能標題底線在整列（不被排序鈕截斷）', /\.apps-title-row\{[^}]*border-bottom/.test(css) && css.includes('.apps-title-row .page-title{border-bottom:none'));

@@ -1,5 +1,5 @@
 # AI-CONTEXT — 雙葉書庫（Futaba）
-> 交接文件 · 對應版本 **v3.4** · 供 AI 助手跨對話接手用。動工前先讀完本檔。
+> 交接文件 · 對應版本 **v3.5** · 供 AI 助手跨對話接手用。動工前先讀完本檔。
 
 ## 0. 一句話
 個人書評 PWA：vanilla JS、全域 `FT` 命名空間、shttps 本地檔案伺服器（localhost:8080）做資料持久化，Android + Brave 為主要環境，使用者 Ting，全程繁體中文。
@@ -71,7 +71,7 @@ booknotes-pwa/
 - **雙主題共用元件規則，只換變數**。日=羊皮紙+銅金（--paper:#f0e7d4 --gold:#a97b3f）、夜=深咖啡+燙金（--paper:#221a12 --gold:#d6a45a）。
 - 關鍵變數：`--leather`（頂欄/側欄恆深：日#33281a/夜#1a140c）、`--glow`（夜間微光/日 transparent）、`--card-grad`（皮革/紙面漸層）、`--paper-glass`（毛玻璃底）、`--gold-dim`（金邊框）、`--bg-glow`（頂部氛圍光）。theme-color 日#33281a/夜#1a140c。
 - **字體三角色**：LXGW WenKai TC（手寫=作品內容：logo/頁大標/書名/作者/進度/#標籤/@角色/平台名/心得簡介/內容輸入框）；Caveat 700 -2.5°（隨筆數字：`.stat-num` 32px，夜間 text-shadow var(--glow)，**單一定義**勿再出現第二條被級聯覆蓋）；Noto Sans TC（介面）。「書庫」二字金色**不斜體**。Playfair/Noto Serif 已退役。字型由 SW `futaba-fonts` 執行期快取，離線可用。
-- **動效**：主按鈕 `.gilt-shine` 光澤掃過（app.js 事件委派 #new-btn/.io-act-pri）、`.star.pop` 點星回彈、pageFade/slide-in 切頁、theme-switch 過渡（僅切換瞬間掛 class）、統計卡 `::before` 桌燈暈（僅夜間，僅統計卡）。全部受 `prefers-reduced-motion` 總開關管制。
+- **動效**（v3.5 全面整理）：token 在 `:root`——時長 `--dur-fast/.13s`、`--dur/.22s`、`--dur-slow/.34s`，緩動 `--ease`（減速收尾）與 `--ease-spring`（微回彈）。切頁 `pageEnter`（淡入＋上浮 10px，**只動 transform/opacity**）；手勢滑入 pageSlideIn；統一按下回饋 `:active{transform:scale(0.965)}`（排序模式磚塊除外——inline transform 歸拖曳引擎）；主按鈕 `.gilt-shine` 光澤掃過（app.js 事件委派 #new-btn/.io-act-pri）、`.star.pop` 點星回彈、toast 彈性緩動、theme-switch 過渡（僅切換瞬間掛 class）、統計卡 `::before` 桌燈暈（僅夜間）。**`transition:all` 已清零**（v3.5，21 處改明確五屬性 background/color/border-color/transform/box-shadow）——新樣式不得再寫 `transition:all`。全部受 `prefers-reduced-motion` 總開關管制。
 - 星等一律 `.gilt-star` 金屬漸層（渲染點：ui.js 首頁/側欄、pages.js 作者/統計）。
 - 毛玻璃黏頂面板（設定分頁列、書庫篩選列）：`--paper-glass` + blur + `--gold-dim` 邊框，z-index:10（**必須低於側欄 15**，v3.1 曾出過圖層事故）。
 
@@ -99,6 +99,7 @@ booknotes-pwa/
 - 排序下拉 `_sortKey` 不持久化（開機 date-desc）；**無 A→Z 選項**（中文無意義，v3.1a 移除）。
 
 ## 8. 路線圖與待辦
+- **v3.6 圖示重繪（已批准，下一版）**：全站約 40 種 emoji/符號全面換成內嵌 SVG 圖示系統（線條風、琥珀金調、currentColor 雙主題）。**舊「頂欄符號＋側欄 emoji」鎖定慣例已由 Ting 於 2026-08-09 明確推翻**（skill 參考檔內的舊慣例條目已失效）。PWA icon-192/512 是否一併重繪待定。
 - **已提案未動工（後段不急）**：側欄改版（A 維持現狀=推薦/B 純導航/C 最近+釘選），等 Ting 選
 - **Icon 更換（後段不急）**：outputs 有 futaba-icon-inventory.md 全站清單，等 Ting 標註後批次換
 - **明確不排**：連載追蹤、時間統計、封面圖（v4.0）——Ting 2026-08 規劃時未選
