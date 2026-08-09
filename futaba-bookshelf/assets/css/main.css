@@ -291,7 +291,10 @@ body.night .sb-controls select option{background:#16110c}
 
 /* ── TRASH ── */
 .trash-max{max-width:640px;margin:0 auto}
-.page-title{font-family:'LXGW WenKai TC','Noto Serif TC',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+/* v3.6d：改靠左＋gap——SVG 圖示是獨立 flex item，space-between 會把標題文字推到右端
+   （emoji 時代圖示與文字同屬一個文字節點所以沒事）；頁內按鈕改 margin-left:auto 推右 */
+.page-title{font-family:'LXGW WenKai TC','Noto Serif TC',serif;font-size:20px;font-weight:700;color:var(--ink);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:flex-start;gap:8px}
+.page-title button{margin-left:auto}
 .danger-sm{background:transparent;border:1px solid rgba(160,48,48,0.3);color:var(--red);border-radius:7px;padding:5px 11px;font-size:12px;cursor:pointer;font-family:inherit;transition:background 0.15s,color 0.15s,border-color 0.15s,transform 0.15s,box-shadow 0.15s}
 .danger-sm:hover{background:rgba(160,48,48,0.07)}
 .trash-hint{font-size:12.5px;color:var(--ink3);margin-bottom:14px}

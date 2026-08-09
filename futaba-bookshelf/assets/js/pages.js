@@ -124,7 +124,7 @@ FT.renderAuthors = function() {
           <div class="author-row-name">${escH(r.name)}</div>
           <div class="author-row-meta">
             <span>作品 ${r.n}</span>
-            ${r.hasRating ? `<span class="author-row-avg">平均 ${r.avg.toFixed(1)}★</span>` : '<span>未評分</span>'}
+            ${r.hasRating ? `<span class="author-row-avg">${r.avg.toFixed(1)}★</span>` : '<span>未評分</span>'}
           </div>
         </div>`).join('');
 };
