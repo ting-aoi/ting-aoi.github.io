@@ -427,6 +427,7 @@ body.night .apps-sort-btn.on{color:#221507}
 #stat-count{margin-left:auto}
 #stat-save{color:var(--green);opacity:0;transition:opacity 0.3s}
 #stat-save.on{opacity:1}
+#stat-save.warn{color:var(--red)}
 
 /* ── INSTALL BANNER ── */
 #install-banner{position:fixed;bottom:calc(30px + var(--safe-bottom));left:50%;transform:translateX(-50%);background:var(--ink);border:1px solid var(--gold);border-radius:11px;padding:9px 14px;display:none;align-items:center;gap:9px;font-size:12px;color:#f5f0e8;box-shadow:0 8px 24px rgba(0,0,0,0.3);z-index:300;white-space:nowrap}
@@ -535,3 +536,7 @@ input[list]{-webkit-appearance:none;appearance:none}
   @keyframes rg-tilt{0%,100%{transform:rotate(0)}50%{transform:rotate(90deg)}}
 }
 body.night #rotate-guard{background:#1c1813}
+
+/* ── 展示模式橫幅（v3.4，僅 github.io 顯示；雙主題只換變數）── */
+#demo-banner{display:none;background:var(--card-grad);border-bottom:1px solid var(--gold-dim);color:var(--ink2);font-size:12px;text-align:center;padding:4px 12px;letter-spacing:0.5px}
+body.demo #demo-banner{display:block}

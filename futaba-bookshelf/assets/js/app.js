@@ -196,6 +196,8 @@ function wireEvents() {
 
 // ── Boot ──
 (async () => {
+  // 展示模式種子必須在 loadAll 之前完成（loadAll 的離線 fallback 讀 localStorage）
+  await FT.initDemo().catch(e => console.warn('[Futaba] demo:', e.message));
   try {
     await Promise.all([
       FT.loadAll().catch(e => console.warn('[Futaba] loadAll:', e.message)),
@@ -209,6 +211,7 @@ function wireEvents() {
 
   // 逐步執行，每步獨立隔離，單一失敗不阻斷後續
   [
+    ['demoBanner',        function(){ if (FT.isDemo()) document.body.classList.add('demo'); }],
     ['applyNightMode',    function(){ FT.applyNightMode(FT.settings.nightMode); }],
     ['initConflictModal', function(){ FT.initConflictModal(); }],
     ['initPWA',           function(){ FT.initPWA(); }],

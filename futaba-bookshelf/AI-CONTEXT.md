@@ -1,5 +1,5 @@
 # AI-CONTEXT — 雙葉書庫（Futaba）
-> 交接文件 · 對應版本 **v3.3** · 供 AI 助手跨對話接手用。動工前先讀完本檔。
+> 交接文件 · 對應版本 **v3.4** · 供 AI 助手跨對話接手用。動工前先讀完本檔。
 
 ## 0. 一句話
 個人書評 PWA：vanilla JS、全域 `FT` 命名空間、shttps 本地檔案伺服器（localhost:8080）做資料持久化，Android + Brave 為主要環境，使用者 Ting，全程繁體中文。
@@ -89,6 +89,8 @@ booknotes-pwa/
 | changelog | 兩層摺疊（大版本系列→小版本系列）+ 惰性渲染；最新系列預設開 |
 
 ## 7. 互動機制
+- **展示模式**（v3.4，GitHub Pages 訪客沙盒）：閘門=`FT.isDemo()`（hostname 以 github.io 結尾才 true——shttps 離線**絕不誤觸發**，此設計不得改用「伺服器連不上」判斷）；開機 `FT.initDemo()` 在 loadAll **之前**執行，展示環境且 localStorage `futaba_v2` 為空時以 `assets/demo.json` 為種子（books 9 本=Ting 真實書評、trash 空、settings 只收 tagDict+平台+選項清單等內容性鍵），之後全走既有離線 fallback，訪客增刪改只存自己瀏覽器；`body.demo` 顯示 `#demo-banner` 常駐橫幅。**demo.json 內容更動需 Ting 過目才可 push（公開上網）**。
+- **存檔提示誠實化**（v3.4）：`FT.showSaved()` 依 `FT._lastWrite.ok` 區分——伺服器寫入失敗顯示「⚠ 未寫入伺服器」（`.warn` 紅字、4 秒），不再失敗也顯示已儲存；展示模式例外（localStorage 即預期儲存地，寫入即成功）。
 - **搜尋語法**（search.js）：`#標籤`、`@人名`、`~內文`（v3.3 起；全文=簡介+心得+備註+角色描述，多詞 AND，可混用）；無前綴文字只搜書名+作者。簡繁比對：**只對查詢詞做變體展開**（sc2tcVariants 有 64 種上限），長原文僅 lowercase 直接 includes——不得把原文丟進變體展開，會被截斷漏比。
 - **手勢**（app.js）：右滑開側欄；左滑=側欄開時關側欄、否則開功能頁（apps-page 加 .slide-in）；搜尋中（window._searchQ）與排序模式（FT._appsSort）停用；防誤觸=位移>70/垂直<60/耗時<600ms/輸入框起點忽略。
 - **返回鍵**：popstate 先攔搜尋（清除+補 pushState 留原頁）；showPage 開頭清搜尋殘留；✕ 按鈕的隱藏收斂在 `FT.clearSearch` 內。
@@ -97,7 +99,6 @@ booknotes-pwa/
 - 排序下拉 `_sortKey` 不持久化（開機 date-desc）；**無 A→Z 選項**（中文無意義，v3.1a 移除）。
 
 ## 8. 路線圖與待辦
-- **v3.4 展示模式（已批准，下一版）**：GitHub Pages 訪客可玩沙盒。hostname 閘門 `location.hostname.endsWith('github.io')`（shttps 掛掉絕不誤觸發）；範例資料 `assets/demo.json`（Ting 已提供真實書評備份，書 9 本全收、回收桶不收、設定只收 tagDict+選項清單；**生成後需 Ting 過目才可 push**——會公開上網）；種子條件=展示模式且 localStorage `futaba_v2` 為空；常駐展示橫幅；順手修 `storage.js` `showSaved()` 依 `FT._lastWrite.ok` 區分成敗提示。
 - **已提案未動工（後段不急）**：側欄改版（A 維持現狀=推薦/B 純導航/C 最近+釘選），等 Ting 選
 - **Icon 更換（後段不急）**：outputs 有 futaba-icon-inventory.md 全站清單，等 Ting 標註後批次換
 - **明確不排**：連載追蹤、時間統計、封面圖（v4.0）——Ting 2026-08 規劃時未選

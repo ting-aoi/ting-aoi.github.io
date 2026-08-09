@@ -86,9 +86,14 @@ FT.showSaved = function() {
   } catch {}
   const el = document.getElementById('stat-save');
   if (!el) return;
+  // v3.4：依 _lastWrite.ok 誠實顯示，不再失敗也裝「已儲存」。
+  // 展示模式例外：localStorage 就是預期儲存地，寫入即成功。
+  const failed = !!(FT._lastWrite && FT._lastWrite.ok === false) && !FT.isDemo();
+  el.textContent = failed ? '⚠ 未寫入伺服器' : '✓ 已儲存';
+  el.classList.toggle('warn', failed);
   el.classList.add('on');
   clearTimeout(el._t);
-  el._t = setTimeout(() => el.classList.remove('on'), 1800);
+  el._t = setTimeout(() => el.classList.remove('on'), failed ? 4000 : 1800);
 };
 
 // ── Tag helpers ──
@@ -325,6 +330,21 @@ const LS = 'futaba_v2';
 const _lsSave = () => { try { localStorage.setItem(LS, JSON.stringify(
   {books:FT.books, trash:FT.trash, settings:FT.settings})); } catch {} };
 const _lsLoad = () => { try { return JSON.parse(localStorage.getItem(LS)||'null'); } catch { return null; } };
+
+// ── 展示模式（v3.4，GitHub Pages 訪客沙盒）──
+// 閘門看 hostname：只有掛在 *.github.io 才算展示環境——shttps 暫時離線
+// 絕不能誤觸發（否則 Ting 會看到範例資料以為自己的書全沒了）。
+FT.isDemo = () => String((typeof location !== 'undefined' && location.hostname) || '').endsWith('github.io');
+
+// 展示環境且訪客沒有自己的資料時，以 assets/demo.json 為種子寫入
+// localStorage；之後一切走既有離線 fallback，訪客可增刪改（只存在其瀏覽器）。
+FT.initDemo = async function() {
+  if (!FT.isDemo() || _lsLoad()) return;
+  const r = await fetch('./assets/demo.json', {cache:'no-store'});
+  if (!r.ok) return;
+  const demo = await r.json();
+  try { localStorage.setItem(LS, JSON.stringify(demo)); } catch {}
+};
 
 // ── Daily backup ──
 // 每日首次存檔時，將 books/trash/settings 快照寫入 data/data.bak.<日期>.json，

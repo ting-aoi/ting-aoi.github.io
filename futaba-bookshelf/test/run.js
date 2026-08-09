@@ -228,6 +228,49 @@ chk('拖曳中斷保險齊備', (() => {
     return FT.bookMatchesSearch(long, FT.parseSearch('~深夜燈塔'));
   })());
 
+  // ════════ F. 展示模式（v3.4）════════
+  G('F 展示模式');
+  // 閘門：只認 hostname，shttps 離線絕不誤觸發
+  location.hostname = 'localhost';
+  chk('v3.4：localhost 不進展示模式', !FT.isDemo());
+  location.hostname = 'ting-aoi.github.io';
+  chk('v3.4：github.io 進展示模式', FT.isDemo());
+  // 種子：只在 localStorage 為空時寫入
+  localStorage.removeItem('futaba_v2');
+  global.fetch = async () => ({ ok:true, json: async () => ({books:{d1:{id:'d1',title:'種子書'}},trash:{},settings:{}}) });
+  await FT.initDemo();
+  chk('v3.4：空 localStorage 時種入範例', (localStorage.getItem('futaba_v2')||'').includes('種子書'));
+  global.fetch = async () => ({ ok:true, json: async () => ({books:{d2:{id:'d2',title:'覆蓋書'}},trash:{},settings:{}}) });
+  await FT.initDemo();
+  chk('v3.4：訪客已有資料不覆蓋', !(localStorage.getItem('futaba_v2')||'').includes('覆蓋書'));
+  global.fetch = realFetch;
+  // demo.json 靜態檢查
+  chk('v3.4：demo.json 結構正確（無回收桶、無個人偏好鍵、標籤引用齊全）', (() => {
+    const d = JSON.parse(read('assets/demo.json'));
+    const banned = ['appsOrder','backupKeep','nightMode','settingsSecOpen',
+                    'readModeDefault','trashAutoClean','trashRetentionDays','newBookDefaults'];
+    return Object.keys(d.books).length > 0
+      && Object.keys(d.trash).length === 0
+      && banned.every(k => !(k in d.settings))
+      && Array.isArray(d.settings.tagDict) && d.settings.tagDict.length > 0
+      && Object.values(d.books).every(b => (b.tags||[]).every(t => d.settings.tagDict.some(td => td.id === t)));
+  })());
+  chk('v3.4：展示橫幅標記與雙主題樣式', html.includes('id="demo-banner"') && css.includes('body.demo #demo-banner'));
+  // 存檔提示誠實化
+  location.hostname = 'localhost';
+  const sv = env.el('stat-save');
+  FT._lastWrite = { ok:false, status:0 };
+  FT.showSaved();
+  chk('v3.4：存檔失敗顯示警示（不再假裝成功）', sv.textContent.includes('未寫入') && sv.classList.contains('warn'));
+  FT._lastWrite = { ok:true, status:204 };
+  FT.showSaved();
+  chk('v3.4：存檔成功恢復 ✓ 已儲存', sv.textContent.includes('已儲存') && !sv.classList.contains('warn'));
+  location.hostname = 'ting-aoi.github.io';
+  FT._lastWrite = { ok:false, status:0 };
+  FT.showSaved();
+  chk('v3.4：展示模式存 localStorage 視為成功', sv.textContent.includes('已儲存'));
+  location.hostname = 'localhost';
+
   // ════════ 總結 ════════
   console.log(`\n${fail ? '✗ 失敗' : '✓ 全部通過'} — ${pass} 通過 / ${fail} 失敗`);
   process.exit(fail ? 1 : 0);

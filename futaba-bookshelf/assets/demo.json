@@ -1,0 +1,417 @@
+{
+ "books": {
+  "book-1781422240216": {
+   "id": "book-1781422240216",
+   "title": "這遊戲也太真實了",
+   "author": "晨星LL",
+   "workStatus": "已完結",
+   "audioStatus": "已完結",
+   "myProgress": "閱讀完",
+   "rating": 5,
+   "textPlatform": "起點中文",
+   "audioPlatform": "喜馬拉雅",
+   "cvType": "多播",
+   "aiCv": "無",
+   "cvChange": "無換CV",
+   "voiceExp": "極佳",
+   "synopsis": "這個遊戲太真實了！為什麼它撞到隊友的衣服後就消失了？什麼？你是在問我這個遊戲是否嚴肅嗎？當然很嚴重！搬磚、跑腿、撿垃圾、快遞... 公司最多能做的就是讓你體驗996的艱辛。在這裡您可以體驗超級雙007。還有比這更多的真實遊戲嗎？好吧,別再胡鬧了,偉大的管理員叫我搬磚。大人說,只要我們犧牲自己的肝臟,下個月他就可以得到一套新的動力裝甲,然後帶我們打開一張新地圖,去廣闊的荒地撿更多的垃圾！...前往荒原世界的楚光發現他已經解鎖了一個避難系統,使他能夠在穿越之前從世界上召喚名為“玩家”的生物。從那天起,整個荒地就不嚴重了。",
+   "review": "第四天災與群像的天花板",
+   "characters": [
+    {
+     "name": "楚光",
+     "desc": "廢土OL策劃 404避難所管理者"
+    },
+    {
+     "name": "小柒",
+     "desc": "真女主"
+    }
+   ],
+   "notes": "",
+   "tags": [
+    "tag_mqdh0x5oh1m",
+    "tag_mqdh10z4jzc",
+    "tag_mqdh3au7tjt",
+    "tag_mqdh3o50ret",
+    "tag_mqdh5na6hku",
+    "tag_mqdhpjgugeb"
+   ],
+   "created": 1781422240216
+  },
+  "book-1781423277275": {
+   "id": "book-1781423277275",
+   "title": "虧成首富從遊戲開始",
+   "author": "青衫取醉",
+   "workStatus": "已完結",
+   "audioStatus": "已完結",
+   "myProgress": "閱讀完",
+   "rating": 5,
+   "textPlatform": "起點中文",
+   "audioPlatform": "喜馬拉雅",
+   "cvType": "多播",
+   "aiCv": "無",
+   "cvChange": "無換CV",
+   "voiceExp": "優良",
+   "synopsis": "近日,特約記者對騰達集團總裁裴倩進行了獨家專訪。\n騰達集團目前的估值已達數千億元。其業務涉及遊戲、網路、數位硬體、文化媒體、餐飲等多個領域,深刻改變了人們生活的各個層面。\n裴謙也被認為是“世界上最好的老闆”、“無與倫比的投資天才”和“天才的遊戲製作人”,擁有“不採取行動治理的管理才能”和“對行業方向的精確洞察”。\n面對記者,裴謙痛苦地抱怨。\n“我其實不是商業奇才！”\n“我的成功完全歸功於運氣！”\n“我最初的目標只是損失5萬元...”\n瞧,商業天才的生活就是這麼卑微和低調。",
+   "review": "系統流遊戲事業的佳作 雖然並非完全在遊戲事業 但反而使整體平衡更好",
+   "characters": [
+    {
+     "name": "裴謙",
+     "desc": "重生者 騰達集團老板"
+    }
+   ],
+   "notes": "",
+   "tags": [
+    "tag_mqdh0x5oh1m",
+    "tag_mqdhg6zbxcv",
+    "tag_mqdhgehzonu"
+   ],
+   "created": 1781423277277
+  },
+  "book-1781423674865": {
+   "id": "book-1781423674865",
+   "title": "全能遊戲設計師",
+   "author": "青衫取醉",
+   "workStatus": "已完結",
+   "audioStatus": "已完結",
+   "myProgress": "閱讀完",
+   "rating": 5,
+   "textPlatform": "起點中文",
+   "audioPlatform": "喜馬拉雅",
+   "cvType": "AI",
+   "aiCv": "有",
+   "cvChange": "無換CV",
+   "voiceExp": "普通",
+   "synopsis": "遊戲設計師陳陌前往科技樹傾斜的平行世界,使用一款又一款神級遊戲來顛覆遊戲圈的故事。\n“以這個時代的遊戲設計理念來看,如果我不把整個遊戲產業搞垮,那我真是浪費在國內免費遊戲的洗禮上。”——陳陌。",
+   "review": "遊戲設計的小說 劇情不錯 只可惜是ai配音 部分閱讀有誤 例如MR",
+   "characters": [
+    {
+     "name": "陳陌",
+     "desc": "主角 穿越者"
+    }
+   ],
+   "notes": "",
+   "tags": [
+    "tag_mqdh0x5oh1m",
+    "tag_mqdhg6zbxcv",
+    "tag_mqdhgehzonu"
+   ],
+   "created": 1781423674865
+  },
+  "book-1781512133021": {
+   "id": "book-1781512133021",
+   "title": "夜的命名術",
+   "author": "會說話的肘子",
+   "workStatus": "已完結",
+   "audioStatus": "已完結",
+   "myProgress": "閱讀完",
+   "rating": 5,
+   "textPlatform": "起點中文",
+   "audioPlatform": "喜馬拉雅",
+   "cvType": "多播",
+   "aiCv": "無",
+   "cvChange": "無換CV",
+   "voiceExp": "優良",
+   "synopsis": "藍與紫的霓虹中，濃密的鋼鐵蒼穹下，數據洪流的前端，是科技革命之後的世界，也是現實與虛幻的分界。\n鋼鐵與身體，過去與未來。\n這裡，表世界與裡世界並存，面前的一切，像是時間之牆近在眼前。\n黑暗逐漸籠罩。\n可你要明白啊我的朋友，我們不能用溫柔去應對黑暗，要用火。",
+   "review": "前中期都算神作，只可惜後期圓不上坑，即使是修訂版，還是有不少bug，但整體還是值得一看。",
+   "characters": [
+    {
+     "name": "慶塵",
+     "desc": "主角 白晝老板 下一代騎士領袖"
+    },
+    {
+     "name": "秧秧",
+     "desc": "女主 立場覺醒者"
+    },
+    {
+     "name": "壹",
+     "desc": "人工智能 任小粟和楊小槿的女兒"
+    }
+   ],
+   "notes": "",
+   "tags": [
+    "tag_mqdh5na6hku",
+    "tag_mqeyd2iirk1",
+    "tag_mqeyd8nich1",
+    "tag_mrlq44inqbg"
+   ],
+   "created": 1781512133021
+  },
+  "book-1781512400479": {
+   "id": "book-1781512400479",
+   "title": "第一序列",
+   "author": "會說話的肘子",
+   "workStatus": "已完結",
+   "audioStatus": "已完結",
+   "myProgress": "閱讀完",
+   "rating": 4,
+   "textPlatform": "起點中文",
+   "audioPlatform": "喜馬拉雅",
+   "cvType": "多播",
+   "aiCv": "無",
+   "cvChange": "無換CV",
+   "voiceExp": "優良",
+   "synopsis": "廢土之上，人類文明得以苟延殘喘。\n一座座壁壘拔地而起，秩序卻不斷崩壞。\n有人說，當災難降臨時，精神意志才是人類面對危險的第一序列武器。\n有人說，不要讓時代的悲哀，成為你的悲哀。\n有人說，我要讓我的悲哀，成為這個時代的悲哀。\n這次是一個新的故事。\n浩劫餘生，終見光明。",
+   "review": "前期較為無趣，中後期劇情較為精彩，收尾勉強還行。",
+   "characters": [
+    {
+     "name": "任小粟",
+     "desc": "主角"
+    },
+    {
+     "name": "楊小槿",
+     "desc": "女主 能力：具現狙擊槍"
+    }
+   ],
+   "notes": "",
+   "tags": [
+    "tag_mqdhpjgugeb",
+    "tag_mqdhgehzonu",
+    "tag_mrlq44inqbg"
+   ],
+   "created": 1781512400479
+  },
+  "book-1781512838277": {
+   "id": "book-1781512838277",
+   "title": "大王饒命",
+   "author": "會說話的肘子",
+   "workStatus": "已完結",
+   "audioStatus": "已完結",
+   "myProgress": "閱讀完",
+   "rating": 4,
+   "textPlatform": "起點中文",
+   "audioPlatform": "喜馬拉雅",
+   "cvType": "多播",
+   "aiCv": "無",
+   "cvChange": "無換CV",
+   "voiceExp": "優良",
+   "synopsis": "高中生呂樹在一場車禍中改變人生，當靈氣復甦時代來襲，他要做這時代的領跑者。\n\n物競天擇，勝者為王。",
+   "review": "前中期優質，但後期呂宙真的爛，完全算是爛尾小說。",
+   "characters": [
+    {
+     "name": "呂樹",
+     "desc": "主角 善於懟人"
+    },
+    {
+     "name": "呂小魚",
+     "desc": "妹妹 吃貨"
+    }
+   ],
+   "notes": "",
+   "tags": [
+    "tag_mqdhgehzonu",
+    "tag_mqeyd2iirk1"
+   ],
+   "created": 1781512838277
+  },
+  "book-1784101506714": {
+   "id": "book-1784101506714",
+   "title": "從劇本殺店開始",
+   "author": "噸噸噸噸噸",
+   "workStatus": "已完結",
+   "audioStatus": "已完結",
+   "myProgress": "閱讀完",
+   "rating": 5,
+   "textPlatform": "起點中文",
+   "audioPlatform": "喜馬拉雅",
+   "cvType": "多播",
+   "aiCv": "無",
+   "cvChange": "無換CV",
+   "voiceExp": "優良",
+   "synopsis": "",
+   "review": "",
+   "characters": [],
+   "notes": "",
+   "tags": [
+    "tag_mqdhg6zbxcv",
+    "tag_mqdhgehzonu",
+    "tag_mqeyd2iirk1"
+   ],
+   "created": 1784101506715
+  },
+  "book-1784101723303": {
+   "id": "book-1784101723303",
+   "title": "生活系美食",
+   "author": "噸噸噸噸噸",
+   "workStatus": "已完結",
+   "audioStatus": "已完結",
+   "myProgress": "閱讀中",
+   "rating": 0,
+   "textPlatform": "起點中文",
+   "audioPlatform": "喜馬拉雅",
+   "cvType": "",
+   "aiCv": "",
+   "cvChange": "",
+   "voiceExp": "",
+   "synopsis": "",
+   "review": "",
+   "characters": [],
+   "notes": "",
+   "tags": [
+    "tag_mrls3yqye1w",
+    "tag_mqeyd2iirk1",
+    "tag_mqdhgehzonu"
+   ],
+   "created": 1784101723303
+  },
+  "book-1784101755583": {
+   "id": "book-1784101755583",
+   "title": "非正常美食文",
+   "author": "噸噸噸噸噸",
+   "workStatus": "已完結",
+   "audioStatus": "製作中",
+   "myProgress": "閱讀中",
+   "rating": 0,
+   "textPlatform": "起點中文",
+   "audioPlatform": "喜馬拉雅",
+   "cvType": "",
+   "aiCv": "",
+   "cvChange": "",
+   "voiceExp": "",
+   "synopsis": "",
+   "review": "",
+   "characters": [],
+   "notes": "",
+   "tags": [
+    "tag_mrls3yqye1w",
+    "tag_mqeyd2iirk1",
+    "tag_mqdhgehzonu"
+   ],
+   "created": 1784101755583
+  }
+ },
+ "trash": {},
+ "settings": {
+  "tagDict": [
+   {
+    "id": "tag_mqdh0x5oh1m",
+    "label": "遊戲",
+    "group": "",
+    "count": 3
+   },
+   {
+    "id": "tag_mqdh10z4jzc",
+    "label": "第四天災",
+    "group": "",
+    "count": 1
+   },
+   {
+    "id": "tag_mqdh3au7tjt",
+    "label": "群像",
+    "group": "",
+    "count": 1
+   },
+   {
+    "id": "tag_mqdh3o50ret",
+    "label": "種田流",
+    "group": "",
+    "count": 1
+   },
+   {
+    "id": "tag_mqdh5na6hku",
+    "label": "科幻",
+    "group": "",
+    "count": 2
+   },
+   {
+    "id": "tag_mqdhg6zbxcv",
+    "label": "事業",
+    "group": "",
+    "count": 3
+   },
+   {
+    "id": "tag_mqdhgehzonu",
+    "label": "系統流",
+    "group": "",
+    "count": 7
+   },
+   {
+    "id": "tag_mqdhpjgugeb",
+    "label": "廢土",
+    "group": "",
+    "count": 2
+   },
+   {
+    "id": "tag_mqeyd2iirk1",
+    "label": "都市",
+    "group": "",
+    "count": 5
+   },
+   {
+    "id": "tag_mqeyd8nich1",
+    "label": "賽博朋克",
+    "group": "",
+    "count": 1
+   },
+   {
+    "id": "tag_mrlq44inqbg",
+    "label": "異能",
+    "group": "",
+    "count": 2
+   },
+   {
+    "id": "tag_mrls3yqye1w",
+    "label": "美食",
+    "group": "",
+    "count": 2
+   }
+  ],
+  "textPlatforms": [
+   "番茄小說",
+   "晉江文學城",
+   "起點中文",
+   "縱橫中文",
+   "掌閱",
+   "微信讀書",
+   "書旗小說",
+   "七貓小說"
+  ],
+  "audioPlatforms": [
+   "喜馬拉雅",
+   "番茄暢聽",
+   "懶人聽書",
+   "蜻蜓FM",
+   "荔枝",
+   "酷我音樂",
+   "網易雲音樂",
+   "咪咕音樂"
+  ],
+  "workStatusOptions": [
+   "連載中",
+   "已完結",
+   "斷更"
+  ],
+  "audioStatusOptions": [
+   "製作中",
+   "已完結",
+   "停更"
+  ],
+  "myProgressOptions": [
+   "書單",
+   "閱讀中",
+   "棄坑",
+   "閱讀完"
+  ],
+  "cvTypeOptions": [
+   "單播",
+   "雙播",
+   "多播",
+   "AI"
+  ],
+  "aiCvOptions": [
+   "無",
+   "有"
+  ],
+  "cvChangeOptions": [
+   "無換CV",
+   "換AI",
+   "更換重要角色CV"
+  ],
+  "voiceExpOptions": [
+   "極佳",
+   "優良",
+   "普通",
+   "略差",
+   "很差"
+  ]
+ }
+}
