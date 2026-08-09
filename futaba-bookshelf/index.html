@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="雙葉書庫">
+<meta name="theme-color" content="#33281a">
+<script>
+// Force SW update: claim new SW immediately, clear stale caches
+(async () => {
+  if (!('serviceWorker' in navigator)) return;
+  try {
+    const regs = await navigator.serviceWorker.getRegistrations();
+    for (const reg of regs) {
+      // Tell any waiting SW to skip waiting and take control now
+      if (reg.waiting) reg.waiting.postMessage('skipWaiting');
+      // Force check for updates
+      reg.update().catch(() => {});
+    }
+    // Clear any caches that don't match the current SW
+    // (handled by activate event in sw.js, but belt-and-suspenders)
+  } catch(e) {}
+})();
+</script>
+
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/icons/icon-192.png">
+<title>雙葉書庫</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="assets/css/main.css?v=1785476318">
+</head>
+<body>
+
+<div id="header">
+  <button class="hbtn" id="toggle-sb">☰</button>
+  <button class="logo" id="logo-home-btn">雙葉<span>書庫</span></button>
+  <div class="header-search">
+    <span style="color:rgba(255,255,255,0.25);font-size:12px">🔍</span>
+    <input type="text" id="search" placeholder="書名 / 作者 / #標籤 / @人名…" autocomplete="off"><button id="search-clear" style="display:none" aria-label="清除搜尋">✕</button>
+  </div>
+  <button class="hbtn nav-only" id="home-btn" title="主頁">🏠</button>
+  <button class="hbtn nav-only" id="trash-btn" title="回收桶">🗑</button>
+  <button class="hbtn nav-only" id="settings-btn" title="設定">⚙</button>
+  <button class="hbtn" id="apps-btn" title="功能">⊞</button>
+</div>
+
+<div id="main">
+  <div id="overlay" onclick="FT.closeSb()"></div>
+  <div id="sidebar">
+    <div class="sb-top"><button class="new-btn" id="new-btn">＋ 新增書評</button></div>
+    <div id="completion-bar" style="display:none"></div>
+    <div class="sb-controls">
+      <select id="filter-status"><option value="">── 全部狀態 ──</option></select>
+      <select id="sort-select" style="max-width:110px">
+        <option value="date-desc">最新優先</option>
+        <option value="date-asc">最舊優先</option>
+        <option value="rating-desc">評分高→低</option>
+        <option value="rating-asc">評分低→高</option>
+        <option value="status">狀態排序</option>
+      </select>
+    </div>
+    <div class="sb-section-label">書庫</div>
+    <div class="book-list" id="book-list"></div>
+    <div id="batch-bar" style="display:none">
+      <span id="batch-count" class="batch-count"></span>
+      <select id="batch-progress" onchange="FT.batchSetProgress(this.value);this.value=''"></select>
+      <button onclick="FT.batchAddTag()">＋標籤</button>
+      <button class="batch-danger" onclick="FT.batchTrash()">🗑</button>
+      <button onclick="FT.exitBatch()">取消</button>
+    </div>
+    <div class="sb-bottom">
+      <button class="sb-nav" id="apps-sb-btn">🧰 功能</button>
+      <button class="sb-nav" id="settings-sb-btn">⚙️ 設定</button>
+    </div>
+  </div>
+
+  <div id="content">
+    <!-- SEARCH OVERLAY -->
+    <div id="search-overlay">
+      <div class="search-results-header">
+        <span id="search-count-label">搜尋結果</span>
+        <button class="search-results-clear" onclick="FT.clearSearch()">✕ 清除</button>
+      </div>
+      <div class="search-results-list" id="search-results-list"></div>
+    </div>
+
+
+    <!-- HOME -->
+    <div class="page" id="home-page">
+      <div class="page-inner">
+        <div class="home-hero">
+          <h1>雙葉<span>書庫</span></h1>
+          <p>記錄你讀過的每一頁，聽過的每一聲。</p>
+        </div>
+        <div class="home-stats" id="home-stats"></div>
+        <div class="home-sec"><span>最近記錄</span><button class="home-sec-link" onclick="FT.showPage('library')">全部 ›</button></div>
+        <div class="recent-grid" id="recent-grid"></div>
+        <div class="home-sec"><span>標籤瀏覽</span><button class="home-sec-link" onclick="FT.showPage('tags')">管理 ›</button></div>
+        <div class="tag-cloud-home" id="home-tag-cloud"></div>
+      </div>
+    </div>
+
+    <!-- NOTE -->
+    <div class="page" id="note-page">
+      <div class="note-header">
+        <div class="note-title-row">
+          <input type="text" id="book-title-input" placeholder="書名…" autocomplete="off">
+          <div id="dup-hint" style="display:none"></div>
+          <span class="mode-badge" id="mode-badge" style="display:none">閱讀模式</span>
+        </div>
+        <div class="note-tags-row" id="tags-row">
+          <button class="add-tag-btn" onclick="FT.openTagModal()">＋ 標籤</button>
+        </div>
+      </div>
+      <div class="note-scroll">
+        <div class="note-body">
+          <div class="section">
+            <div class="sec-title">📋 基本資料</div>
+            <div class="fields-grid">
+              <div class="field"><label>作者</label><input type="text" id="f-author" placeholder="作者名稱"></div>
+              <div class="field">
+                <label>評分</label>
+                <div class="star-row">
+                  <span class="star" data-v="1">★</span><span class="star" data-v="2">★</span>
+                  <span class="star" data-v="3">★</span><span class="star" data-v="4">★</span>
+                  <span class="star" data-v="5">★</span>
+                  <span id="star-label" style="font-size:12px;color:var(--ink3);margin-left:5px"></span>
+                </div>
+              </div>
+              <div class="field full">
+                <label>作品狀態</label><div class="status-row" id="status-row-work"></div>
+              </div>
+              <div class="field full" id="audio-status-section">
+                <label>聽書狀態</label><div class="status-row" id="status-row-audio"></div>
+              </div>
+              <div class="field full">
+                <label>我的進度</label><div class="status-row" id="status-row-progress"></div>
+              </div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="sec-title">📱 平台資訊</div>
+            <div class="fields-grid">
+              <div class="field"><label>閱讀平台</label><select id="f-text-platform"></select></div>
+              <div class="field"><label>聽書平台</label><select id="f-audio-platform"></select></div>
+            </div>
+          </div>
+          <div class="section" id="cv-fields-section">
+            <div class="sec-title">🎧 聽書體驗</div>
+            <div class="fields-grid">
+              <div class="field"><label>配音類型</label><select id="f-cv-type"></select></div>
+              <div class="field"><label>AI 配音</label><select id="f-ai-cv"></select></div>
+              <div class="field"><label>換 CV</label><select id="f-cv-change"></select></div>
+              <div class="field"><label>聲音體驗</label><select id="f-voice-exp"></select></div>
+            </div>
+          </div>
+          <div class="section">
+            <div class="sec-title">📖 劇情簡介</div>
+            <div class="field"><textarea id="f-synopsis" class="tall" placeholder="簡短描述故事大綱…"></textarea></div>
+          </div>
+          <div class="section">
+            <div class="sec-title">✍️ 個人心得</div>
+            <div class="field"><textarea id="f-review" class="tall" placeholder="閱讀感受、推薦指數…"></textarea></div>
+          </div>
+          <div class="section">
+            <div class="sec-title">👥 重要角色</div>
+            <div class="char-list" id="char-list"></div>
+            <div class="char-add-row" id="char-add-row">
+              <input class="char-name-in" type="text" id="char-name-in" placeholder="@人名">
+              <input class="char-desc-in" type="text" id="char-desc-in" placeholder="角色描述…"
+                     onkeydown="if(event.key==='Enter')FT.addChar()">
+              <button class="char-add-btn" onclick="FT.addChar()">新增</button>
+            </div>
+          </div>
+          <div class="section">
+            <div class="sec-title">📝 備註</div>
+            <div class="field"><textarea id="f-notes" placeholder="備註…"></textarea></div>
+          </div>
+          <div style="margin-top:28px;padding-bottom:20px" id="delete-row">
+            <button id="delete-btn" class="act-btn danger">🗑 移至回收桶</button>
+            <button id="export-book-btn" class="act-btn export-md" onclick="FT.exportBook()">↓ 匯出 MD</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRASH -->
+    <div class="page" id="trash-page">
+      <div class="page-inner">
+        <div class="trash-max">
+          <div class="page-title">
+            <span>🗑 回收桶</span>
+            <button class="danger-sm" id="empty-trash-btn">全部永久刪除</button>
+          </div>
+          <div class="trash-hint">已刪除的書評保留在此，可還原或永久刪除。</div>
+          <div id="trash-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="settings-page">
+      <div class="page-inner">
+        <div class="settings-max">
+          <div class="page-title" style="margin-bottom:14px">⚙ 設定</div>
+          <div class="settings-tabs">
+            <button class="settings-tab on" data-stab="general" onclick="FT.switchSettingsTab('general',this)">⚙️ 一般</button>
+            <button class="settings-tab" data-stab="book" onclick="FT.switchSettingsTab('book',this)">📖 書目</button>
+            <button class="settings-tab" data-stab="audio" onclick="FT.switchSettingsTab('audio',this)">🎧 有聲</button>
+          </div>
+          <div class="settings-sec" data-tab="book">
+            <div class="settings-sec-title">✏️ 新書預設值</div>
+            <div class="settings-hint" style="margin-bottom:10px">建立新書評時自動帶入，加快輸入。</div>
+            <div class="fields-grid">
+              <div class="field"><label>預設閱讀平台</label>
+                <select id="default-text-platform" onchange="FT.setNewBookDefault('textPlatform', this.value)"></select>
+              </div>
+              <div class="field"><label>預設聽書平台</label>
+                <select id="default-audio-platform" onchange="FT.setNewBookDefault('audioPlatform', this.value)"></select>
+              </div>
+            </div>
+          </div>
+
+          <div class="settings-sec" data-tab="general">
+            <div class="settings-sec-title">🩺 資料維護</div>
+            <div class="settings-hint" style="margin-bottom:10px">檢查伺服器上是否有不在書庫索引中的書評檔案（可救回或清除）。每日首次存檔時自動建立備份，僅保留最近數份（份數見下方狀態）。</div>
+            <button class="io-act" id="orphan-scan-btn" style="max-width:240px" onclick="FT.runOrphanScan()">🔍 掃描孤兒檔案</button>
+            <div class="settings-hint" style="margin-top:10px">備份狀態：<span id="backup-info">檢查中…</span></div>
+            <button class="io-act" id="backup-now-btn" style="max-width:240px" onclick="FT.backupNow()">🗄️ 立即備份</button>
+            <div class="toggle-row" style="margin-top:10px">
+              <div><div class="toggle-label">自動清理回收桶</div><div class="toggle-desc">啟動時自動移除已刪除超過 30 天的項目</div></div>
+              <label class="toggle"><input type="checkbox" id="trash-clean-toggle" onchange="FT.settings.trashAutoClean=this.checked;FT.saveAll()"><span class="toggle-track"></span></label>
+            </div>
+          </div>
+
+          <div class="settings-sec" data-tab="general">
+            <div class="settings-sec-title">🔄 系統更新</div>
+            <div class="settings-hint" style="margin-bottom:10px">目前版本：<span id="settings-ver">—</span>。若加入桌面的 App 卡在舊版本，可強制更新：清除全部快取並重新載入，書評資料不受影響。也可直接在網址列輸入 <b>/#update</b> 觸發。</div>
+            <button class="io-act io-act-pri" style="width:100%" onclick="FT.forceUpdate()">🔄 強制更新（清除快取並重新載入）</button>
+          </div>
+
+          <div class="settings-sec" data-tab="general">
+            <div class="settings-sec-title">🌙 外觀</div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">夜間模式</div><div class="toggle-desc">深色背景，保護夜間視力</div></div>
+              <label class="toggle"><input type="checkbox" id="night-toggle"><span class="toggle-track"></span></label>
+            </div>
+            <div class="toggle-row">
+              <div><div class="toggle-label">閱讀模式</div><div class="toggle-desc">開啟書評時進入閱讀模式，防止誤改</div></div>
+              <label class="toggle"><input type="checkbox" id="readmode-toggle"><span class="toggle-track"></span></label>
+            </div>
+          </div>
+
+          <div class="settings-sec" data-tab="book">
+            <div class="settings-sec-title">📌 狀態選項</div>
+            <div id="status-manage-list"></div>
+          </div>
+
+          <div class="settings-sec" data-tab="book">
+            <div class="settings-sec-title">📖 閱讀平台</div>
+            <div class="edit-list" id="text-platform-list"></div>
+            <div class="add-row">
+              <input type="text" id="text-platform-input" placeholder="新增閱讀平台…" autocomplete="off" onkeydown="if(event.key==='Enter')FT.addPlatform('text')">
+              <button onclick="FT.addPlatform('text')">新增</button>
+            </div>
+          </div>
+
+          <div class="settings-sec" data-tab="audio">
+            <div class="settings-sec-title">🎧 聽書平台</div>
+            <div class="edit-list" id="audio-platform-list"></div>
+            <div class="add-row">
+              <input type="text" id="audio-platform-input" placeholder="新增聽書平台…" autocomplete="off" onkeydown="if(event.key==='Enter')FT.addPlatform('audio')">
+              <button onclick="FT.addPlatform('audio')">新增</button>
+            </div>
+          </div>
+
+          <div class="settings-sec" data-tab="audio">
+            <div class="settings-sec-title">🎙 配音類型選項</div>
+            <div class="edit-list" id="cv-type-list"></div>
+            <div class="add-row">
+              <input type="text" id="cv-type-input" placeholder="新增配音類型…" autocomplete="off" onkeydown="if(event.key==='Enter')FT.addCvOption('cvType')">
+              <button onclick="FT.addCvOption('cvType')">新增</button>
+            </div>
+          </div>
+
+          <div class="settings-sec" data-tab="audio">
+            <div class="settings-sec-title">🤖 AI 配音選項</div>
+            <div class="edit-list" id="ai-cv-list"></div>
+            <div class="add-row">
+              <input type="text" id="ai-cv-input" placeholder="新增AI配音選項…" autocomplete="off" onkeydown="if(event.key==='Enter')FT.addCvOption('aiCv')">
+              <button onclick="FT.addCvOption('aiCv')">新增</button>
+            </div>
+          </div>
+
+          <div class="settings-sec" data-tab="audio">
+            <div class="settings-sec-title">🔄 換 CV 選項</div>
+            <div class="edit-list" id="cv-change-list"></div>
+            <div class="add-row">
+              <input type="text" id="cv-change-input" placeholder="新增換CV選項…" autocomplete="off" onkeydown="if(event.key==='Enter')FT.addCvOption('cvChange')">
+              <button onclick="FT.addCvOption('cvChange')">新增</button>
+            </div>
+          </div>
+
+          <div class="settings-sec" data-tab="audio">
+            <div class="settings-sec-title">🔊 聲音體驗選項</div>
+            <div class="edit-list" id="voice-exp-list"></div>
+            <div class="add-row">
+              <input type="text" id="voice-exp-input" placeholder="新增聲音體驗選項…" autocomplete="off" onkeydown="if(event.key==='Enter')FT.addCvOption('voiceExp')">
+              <button onclick="FT.addCvOption('voiceExp')">新增</button>
+            </div>
+          </div>
+
+
+
+        </div>
+      </div>
+    </div>
+
+    <!-- APPS (功能頁) -->
+    <div class="page" id="apps-page">
+      <div class="page-inner">
+        <div class="apps-max">
+          <div class="apps-title-row">
+            <div class="page-title" style="margin-bottom:0">🧰 功能</div>
+            <button class="apps-sort-btn" id="apps-sort-btn" onclick="FT.toggleAppsSort()">⇅ 排序</button>
+          </div>
+          <div class="apps-grid" id="apps-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LIBRARY 書庫頁 (v3.1) -->
+    <div class="page" id="library-page">
+      <div class="page-inner">
+        <div class="settings-max">
+          <div class="page-title" style="margin-bottom:16px">📚 書庫</div>
+          <div id="library-content"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAGS 標籤頁 (v3.0b:自設定頁獨立) -->
+    <div class="page" id="tags-page">
+      <div class="page-inner">
+        <div class="settings-max">
+          <div class="page-title" style="margin-bottom:6px">🏷 標籤</div>
+          <div class="settings-hint" style="margin-bottom:14px">管理標籤字典：新增、改名、分組、合併；使用中的標籤無法刪除。</div>
+
+            <div class="edit-list" id="settings-tag-list"></div>
+            <div class="add-row" style="margin-top:14px">
+              <input type="text" id="settings-tag-input" placeholder="標籤名稱…" autocomplete="off" onkeydown="if(event.key==='Enter')FT.addTagFromSettings()">
+              <button onclick="FT.addTagFromSettings()">新增</button>
+            </div>
+            <div class="tag-merge-row">
+              <select id="merge-src"></select>
+              <span class="tag-merge-arrow">→</span>
+              <select id="merge-dst"></select>
+              <button class="io-act" style="padding:8px 14px" onclick="FT.mergeTags()">合併</button>
+            </div>
+            <div style="margin-top:6px;display:flex;gap:7px;align-items:center">
+              <span style="font-size:11px;color:var(--ink3);white-space:nowrap;flex-shrink:0">分組</span>
+              <input type="text" id="settings-tag-group-input" placeholder="選填，可直接選已有分組…"
+                     list="tag-groups-datalist" autocomplete="off"
+                     style="flex:1;background:var(--paper2);border:1px solid var(--border);border-radius:7px;padding:7px 10px;font-size:13px;font-family:inherit;color:var(--ink);outline:none">
+              <datalist id="tag-groups-datalist"></datalist>
+            </div>
+          
+        </div>
+      </div>
+    </div>
+
+    <!-- AUTHORS 作者頁 -->
+    <div class="page" id="authors-page">
+      <div class="page-inner">
+        <div class="settings-max">
+          <div class="page-title" style="margin-bottom:16px">✍️ 作者</div>
+          <div id="authors-content"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BACKUP (備份頁) -->
+    <div class="page" id="backup-page">
+      <div class="page-inner">
+        <div class="settings-max">
+          <div class="page-title" style="margin-bottom:14px">💾 備份</div>
+          <div class="settings-hint" style="margin-bottom:16px">書評與設定的匯出／匯入。建議定期匯出「全部備份」保存。</div>
+
+          <div class="io-card" style="margin-bottom:14px">
+            <div class="io-card-head">
+              <span class="io-ico">📦</span>
+              <div class="io-card-text">
+                <div class="io-card-title">全部備份</div>
+                <div class="io-card-desc">書評與設定完整打包，建議定期保存</div>
+              </div>
+            </div>
+            <div class="io-actions">
+              <button class="io-act io-act-pri" onclick="FT.exportAll()">↑&ensp;匯出 ZIP</button>
+              <label class="io-act">↓&ensp;匯入 ZIP
+                <input type="file" accept=".zip" style="display:none" onchange="FT.importAll(this)">
+              </label>
+            </div>
+          </div>
+
+          <div class="io-card" style="margin-bottom:14px">
+            <div class="io-card-head">
+              <span class="io-ico">📚</span>
+              <div class="io-card-text">
+                <div class="io-card-title">書評資料</div>
+                <div class="io-card-desc">僅書評與回收桶，不含設定</div>
+              </div>
+            </div>
+            <div class="io-actions">
+              <button class="io-act io-act-pri" onclick="FT.exportBooksOnly()">↑&ensp;匯出 ZIP</button>
+              <label class="io-act">↓&ensp;匯入 ZIP
+                <input type="file" accept=".zip" style="display:none" onchange="FT.importBooksOnly(this)">
+              </label>
+            </div>
+          </div>
+
+          <div class="io-card">
+            <div class="io-card-head">
+              <span class="io-ico">⚙️</span>
+              <div class="io-card-text">
+                <div class="io-card-title">設定檔</div>
+                <div class="io-card-desc">平台、狀態選項與標籤字典</div>
+              </div>
+            </div>
+            <div class="io-actions">
+              <button class="io-act io-act-pri" onclick="FT.exportSettings()">↑&ensp;匯出 JSON</button>
+              <label class="io-act">↓&ensp;匯入 JSON
+                <input type="file" accept=".json" style="display:none" onchange="FT.importSettings(this)">
+              </label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="page" id="stats-page">
+      <div class="page-inner">
+        <div class="stats-max">
+          <div class="page-title" style="margin-bottom:16px">📊 統計分析</div>
+          <div id="stats-content">
+            <div style="font-size:13px;color:var(--ink3);padding:20px 0">載入中…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHANGELOG -->
+    <div class="page" id="changelog-page">
+      <div class="page-inner">
+        <div class="settings-max">
+          <div class="page-title" style="margin-bottom:14px">📋 更新日誌</div>
+          <div id="changelog-content">
+            <div style="font-size:13px;color:var(--ink3);padding:20px 0">載入中…</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</div>
+
+<!-- 橫式攔截層：手機橫放時全螢幕提示，媒體查詢限定觸控裝置＋矮視窗，桌面瀏覽器不受影響 -->
+<div id="rotate-guard">
+  <div class="rg-icon">📱</div>
+  <div class="rg-text">請將裝置轉回直式使用</div>
+</div>
+
+<div id="statusbar">
+  <span id="stat-note">雙葉書庫</span> <span id="stat-ver">v3.2</span>
+  <span id="stat-count" style="margin-left:auto"></span>
+  <span id="stat-save">✓ 已儲存</span>
+</div>
+
+<!-- TAG MODAL -->
+<div id="tag-modal">
+  <div id="tag-panel" onclick="event.stopPropagation()">
+    <div class="modal-title">
+      <span>🏷 選擇標籤</span>
+      <button class="modal-close" onclick="FT.closeTagModal()">✕</button>
+    </div>
+    <div class="add-row">
+      <input type="text" id="tag-input" placeholder="標籤名稱…" autocomplete="off" onkeydown="if(event.key==='Enter')FT.addTagFromModal()">
+      <button onclick="FT.addTagFromModal()">新增</button>
+    </div>
+    <div class="tag-modal-group-row">
+      <span class="tag-modal-group-label">分組</span>
+      <input type="text" id="tag-group-input" placeholder="選填，可選已有分組…"
+             list="tag-groups-datalist-modal" autocomplete="off">
+      <datalist id="tag-groups-datalist-modal"></datalist>
+    </div>
+    <div class="tag-cloud" id="tag-cloud"></div>
+  </div>
+</div>
+
+<!-- CONFLICT MODAL -->
+<div id="conflict-modal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--paper);border-radius:14px;width:100%;max-width:400px;padding:22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,0.35)">
+    <div style="font-family:'LXGW WenKai TC',serif;font-size:17px;font-weight:700;color:var(--ink)">⚠️ 偵測到版本衝突</div>
+    <div style="font-size:13px;color:var(--ink2);line-height:1.7">其他裝置剛儲存了新版本的資料。<br>請選擇要保留哪一份：</div>
+    <div style="display:flex;gap:10px;flex-direction:column">
+      <div id="conflict-diff" style="font-size:12.5px;line-height:1.7;color:var(--ink2);background:var(--paper2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:4px;max-height:180px;overflow-y:auto"></div>
+      <button id="conflict-keep-local" style="padding:11px;border-radius:8px;border:none;cursor:pointer;font-family:'Noto Serif TC',serif;font-size:13px;font-weight:600;background:var(--gold);color:#1a1008">保留本機版本（覆蓋遠端）</button>
+      <button id="conflict-load-remote" style="padding:11px;border-radius:8px;border:1px solid var(--border);cursor:pointer;font-family:'Noto Serif TC',serif;font-size:13px;font-weight:600;background:var(--paper2);color:var(--ink)">載入遠端版本（放棄本機變更）</button>
+    </div>
+  </div>
+</div>
+
+<div id="install-banner">
+  <span>📲 加入主畫面，像 App 使用</span>
+  <button class="ibtn" id="install-btn">安裝</button>
+  <button class="idis" onclick="FT.dismissInstall()">✕</button>
+</div>
+
+<!-- CDN libs -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<!-- Futaba modules -->
+<script src="assets/js/storage.js?v=1785476318"></script>
+<script src="assets/js/search.js?v=1785476318"></script>
+<script src="assets/js/ui.js?v=1785476318"></script>
+<script src="assets/js/pages.js?v=1785476318"></script>
+<script src="assets/js/editor.js?v=1785476318"></script>
+<script src="assets/js/settings.js?v=1785476318"></script>
+<script src="assets/js/app.js?v=1785476318"></script>
+
+</body>
+</html>

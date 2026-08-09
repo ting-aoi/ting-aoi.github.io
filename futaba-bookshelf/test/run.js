@@ -1,0 +1,204 @@
+#!/usr/bin/env node
+// 雙葉書庫 回歸測試集 — 用法：cd booknotes-pwa && node test/run.js
+// 每條斷言都對應一個歷史上真實修過的 bug，用來確保它不再復發。
+// 新增修復時，請在對應區塊補一條斷言並註明版本。
+
+const fs = require('fs');
+const path = require('path');
+const ROOT = path.join(__dirname, '..');
+const { makeEnv } = require('./dom-stub');
+
+const read = p => fs.readFileSync(path.join(ROOT, p), 'utf-8');
+const css = read('assets/css/main.css');
+const html = read('index.html');
+
+let pass = 0, fail = 0, group = '';
+const G = g => { group = g; };
+const chk = (name, cond) => {
+  if (cond) pass++;
+  else { fail++; console.log(`  ✗ [${group}] ${name}`); }
+};
+
+// ════════ A. 靜態不變量（CSS / HTML）════════
+G('A 靜態');
+chk('CSS 括號平衡', css.split('{').length === css.split('}').length);
+chk('v2.9c 誤刪回歸：側欄完成度符號固定亮色', /\.badge-r\{color:#[0-9a-f]{6}\}/.test(css) && /\.badge-y\{color:#[0-9a-f]{6}\}/.test(css));
+chk('v3.0a：stat-num 單一定義且為 Caveat', (css.match(/\.stat-num\{/g) || []).length === 1 && /\.stat-num\{font-family:'Caveat'/.test(css));
+chk('v3.0a：隨筆數字微傾與夜間微光', /\.stat-num\{[^}]*rotate\(-2\.5deg\)[^}]*var\(--glow\)/.test(css));
+chk('v3.0a：「書庫」不用斜體', css.includes('.logo span{font-weight:400') && !/\.logo span\{[^}]*italic/.test(css));
+chk('v3.0：Playfair 全站退役', !css.includes('Playfair') && !html.includes('Playfair'));
+chk('v3.0：手寫字體與 Caveat 已載入', css.includes('LXGW+WenKai+TC') && css.includes('Caveat'));
+chk('v3.0：頂欄側欄用皮革變數（日夜恆深）', css.includes('--leather') && (css.match(/background:var\(--leather\)/g) || []).length >= 2);
+chk('v3.0：reduced-motion 總開關', css.includes('prefers-reduced-motion'));
+chk('v3.1：黏頂面板必須低於側欄', /\.settings-tabs\{[^}]*z-index:10/.test(css) && /\.lib-controls\{[^}]*z-index:10/.test(css) && /#sidebar\{[^}]*z-index:15/.test(css));
+chk('v3.1c：黏頂面板有金框（不像破圖）', /\.settings-tabs\{[^}]*border:1px solid var\(--gold-dim\)/.test(css) && /\.lib-controls\{[^}]*border:1px solid var\(--gold-dim\)/.test(css));
+chk('v3.1：功能標題底線在整列（不被排序鈕截斷）', /\.apps-title-row\{[^}]*border-bottom/.test(css) && css.includes('.apps-title-row .page-title{border-bottom:none'));
+chk('v3.1：home-sec flex 且底線滿寬', /\.home-sec\{[^}]*display:flex/.test(css) && /\.home-sec\{[^}]*border-bottom/.test(css));
+chk('v3.1：角色列基線對齊', /\.char-item\{[^}]*align-items:baseline/.test(css));
+chk('v3.0c：磚牆副標單行省略（磚等大）', /\.app-tile-sub\{[^}]*text-overflow:ellipsis/.test(css));
+chk('v3.0d：排序模式抑制選取與長按', /\.apps-grid\.sorting\{[^}]*user-select:none/.test(css) && css.includes('-webkit-touch-callout:none'));
+chk('v3.1b：書庫篩選列 2 欄（至多兩行）', /\.lib-controls\{display:grid;grid-template-columns:repeat\(2,1fr\)/.test(css));
+chk('v3.1a：側欄無書名 A→Z 排序', !html.includes('title-asc') && !html.includes('title-desc'));
+chk('v3.0b：字體 preconnect', html.includes('fonts.googleapis.com') && html.includes('crossorigin'));
+chk('v3.0b：設定三分頁 11 區標記', (html.match(/data-tab="/g) || []).length === 11);
+chk('v3.1：11 個頁面區塊齊備', ['home','note','apps','authors','backup','trash','settings','stats','changelog','tags','library']
+  .every(p => html.includes(`id="${p}-page"`)));
+chk('鐵律：書櫃功能零殘留', !html.includes('shelfDict') && !html.includes('book.shelves') && !/shelf/i.test(read('assets/js/pages.js')));
+
+// ════════ B. 資產與版本一致性 ════════
+G('B 版本');
+const sw = read('sw.js');
+const build = (sw.match(/BUILD\s*=\s*'(\d+)'/) || [])[1];
+chk('sw.js 有 BUILD 戳', !!build);
+chk('index.html 資產戳與 BUILD 一致', build && html.includes('?v=' + build));
+chk('版本號格式可被 bump.py 偵測', /<span id="stat-ver">v\d+\.\d+[a-z]?<\/span>/.test(html) || />v\d+\.\d+[a-z]?</.test(html));
+chk('SW 字型獨立快取且不被 activate 清除', sw.includes('futaba-fonts') && sw.includes("k!=='futaba-fonts'"));
+chk('manifest 相對路徑與直式鎖定', (() => {
+  const m = JSON.parse(read('manifest.json'));
+  return m.start_url.startsWith('./') && m.scope === './' && m.orientation === 'portrait';
+})());
+
+// ════════ C. 執行期行為 ════════
+G('C 執行期');
+const env = makeEnv();
+require(path.join(ROOT, 'assets/js/storage.js'));
+require(path.join(ROOT, 'assets/js/search.js'));
+require(path.join(ROOT, 'assets/js/ui.js'));
+require(path.join(ROOT, 'assets/js/pages.js'));
+const FT = global.FT;
+
+// 測試替身
+['renderHome','renderTrash','renderSettings','renderStats','renderChangelog',
+ 'renderAuthors','renderStatusFilter','renderTagsRow','loadForm','applyReadMode',
+ 'renderCharacters','flushCharInputs','saveCurrentBook','renderSearchOverlay'].forEach(f => { FT[f] = () => {}; });
+FT.debSave = () => {}; FT.saveAll = () => {};
+FT.settings.myProgressOptions = ['書單','閱讀中','棄坑','閱讀完'];
+FT.settings.tagDict = [{ id:'t1', label:'系統流', group:'' }];
+const full = { author:'甲', myProgress:'閱讀完', textPlatform:'起點', audioPlatform:'無',
+               characters:[{name:'角色'}], tags:['t1'], synopsis:'s', review:'r' };
+FT.books = {
+  b1: { id:'b1', title:'完整書', rating:5, created:3, ...full },
+  b2: { id:'b2', title:'待補書', rating:3, created:2, ...full, synopsis:'', review:'', myProgress:'閱讀中' },
+  b3: { id:'b3', title:'空殼書', author:'', rating:0, myProgress:'書單', tags:[], created:1 },
+};
+FT.trash = {};
+
+// C1 完成度
+chk('completionLevel 三態正確', FT.completionLevel(FT.books.b1)==='ok'
+  && FT.completionLevel(FT.books.b2)==='yellow' && FT.completionLevel(FT.books.b3)==='red');
+
+// C2 側欄清單與 badge
+FT.renderList();
+chk('側欄清單渲染 badge class', /badge-[ry]/.test(env.html('book-list')));
+chk('側欄星等套金屬漸層', env.html('book-list').includes('gilt-star'));
+
+// C3 搜尋與返回鍵（v2.9d/v2.9e）
+env.el('search-clear').style.display = 'flex';
+window._searchQ = '測試'; env.el('search').value = '測試';
+FT.currentPage = 'home';
+env.fireWin('popstate', { state:{ page:'home' } });
+chk('v2.9d：返回鍵先退出搜尋', window._searchQ === '');
+chk('v2.9d：退出搜尋後留在原頁', FT.currentPage === 'home');
+chk('v2.9e：✕ 按鈕同步隱藏', env.el('search-clear').style.display === 'none');
+
+// C4 導航層級（鐵律）
+FT.showPage('stats');
+chk('切頁正常', FT.currentPage === 'stats');
+env.fireWin('popstate', { state:{ page:'home' } });
+chk('扁平兩層：任何頁返回即回主頁', FT.currentPage === 'home');
+
+// C5 書庫頁（v3.1/v3.1a/v3.1b）
+const libHtml = () => env.html('library-content');
+const card = t => libHtml().indexOf('>' + t + '</div>');
+FT._lib = { prog:'', sort:'date-desc', rating:'', comp:'' };
+FT.renderLibrary();
+chk('書庫列出全部', libHtml().includes('3 本'));
+chk('書庫四顆下拉', (libHtml().match(/class="lib-select"/g) || []).length === 4);
+chk('最新優先', card('完整書') < card('空殼書'));
+FT.libSet('sort','rating-asc');
+chk('評分低→高', card('空殼書') < card('完整書'));
+FT.libSet('sort','date-desc'); FT.libSet('rating','unrated');
+chk('未評分篩選', libHtml().includes('1 本') && card('空殼書') >= 0);
+FT.libSet('rating',''); FT.libSet('comp','yellow');
+chk('待補狀態篩選', libHtml().includes('1 本') && card('待補書') >= 0);
+FT.libSet('comp',''); FT.libSet('prog','閱讀中');
+chk('進度篩選', libHtml().includes('1 本') && card('待補書') >= 0);
+chk('下拉選中態保留', /value="閱讀中" selected/.test(libHtml()));
+FT.libSet('prog','');
+
+// C6 功能磚與排序（v3.0c/v3.0d）
+env.el('stat-ver').textContent = 'test';
+FT.renderApps();
+chk('磚牆九格', (env.html('apps-grid').match(/app-tile-icon/g) || []).length === 9);
+chk('設定磚副標為當前模式', /日間模式|夜間模式/.test(env.html('apps-grid')));
+FT.settings.appsOrder = ['stats','home'];
+const ord = FT.orderedApps().map(a => a.id);
+chk('自訂順序生效且未列磚附尾', ord[0]==='stats' && ord[1]==='home' && ord.length === FT.APPS.length);
+FT.settings.appsOrder = null;
+FT._appsSort = true;
+FT.currentPage = 'apps';
+FT.openApp('trash');
+chk('v3.0c：排序模式中點磚不導航', FT.currentPage === 'apps');
+FT._appsSort = false;
+
+// C7 標籤頁與作者頁（v3.0b/v3.1）
+FT.renderTagMergeSelects = FT.renderTagMergeSelects || (() => {});
+FT.renderSettingsTagList = FT.renderSettingsTagList || (() => {});
+FT._authorSel = null;
+chk('標籤頁渲染函式存在', typeof FT.renderTagsPage === 'function');
+chk('作者帶入新書函式存在', typeof FT.newBookForAuthor === 'function');
+
+// C8 強制更新（v2.9h/v2.9i）
+chk('forceUpdate 存在', typeof FT.forceUpdate === 'function');
+chk('#update 開機偵測就位', read('assets/js/ui.js').includes("location.hash === '#update'"));
+
+// C9 備份（v3.2 強化）
+chk('備份日期用本地時區（非 UTC）', (() => {
+  const d = new Date(2026, 0, 1, 0, 30);   // 本地 1/1 00:30；UTC 可能是前一天
+  return FT.localDateStamp(d) === '2026-01-01';
+})());
+chk('備份保留份數可由設定調整', (() => {
+  FT.applySettings({ backupKeep: 14 });
+  return FT.settings.backupKeep === 14;
+})());
+chk('備份份數非法值不覆蓋', (() => {
+  FT.applySettings({ backupKeep: 0 });
+  return FT.settings.backupKeep === 14;
+})());
+FT.settings.backupKeep = 7;
+chk('備份對外介面齊備', typeof FT.runBackupNow === 'function' && typeof FT.backupInfo === 'function');
+
+// C10 設定頁預設開合（v3.0f）
+chk('settingsSecOpen 出廠三區', JSON.stringify(FT.settings.settingsSecOpen) === JSON.stringify(['系統更新','外觀','新書預設值']));
+chk('settingsSecOpen 非陣列不覆蓋', (() => {
+  FT.applySettings({ settingsSecOpen: 'bad' });
+  return Array.isArray(FT.settings.settingsSecOpen);
+})());
+
+// ════════ D. 原始碼衛生 ════════
+G('D 衛生');
+const jsFiles = fs.readdirSync(path.join(ROOT, 'assets/js')).filter(f => f.endsWith('.js'));
+const allJs = jsFiles.map(f => read('assets/js/' + f)).join('\n');
+chk('無 console.log 殘留', !/console\.log\(/.test(allJs));
+chk('事件引用的 FT 函式皆有定義', (() => {
+  const defined = new Set([...allJs.matchAll(/FT\.(\w+)\s*=/g)].map(m => m[1]));
+  const called = new Set([...(allJs + html).matchAll(/on(?:click|change)=\\?"FT\.(\w+)\(/g)].map(m => m[1]));
+  const missing = [...called].filter(c => !defined.has(c));
+  if (missing.length) console.log('    缺失:', missing.join(', '));
+  return missing.length === 0;
+})());
+chk('拖曳引擎：拖曳期間不得重建 DOM', (() => {
+  const pages = read('assets/js/pages.js');
+  // touchmove 處理中不得出現 renderApps()（v3.0c 事故根因）
+  const mv = pages.slice(pages.indexOf("addEventListener('touchmove'"), pages.indexOf("addEventListener('touchend'"));
+  return !mv.includes('FT.renderApps()');
+})());
+chk('拖曳讓位使用實測步距（v3.1）', read('assets/js/pages.js').includes('tiles[1].getBoundingClientRect().left'));
+chk('拖曳中斷保險齊備', (() => {
+  const p = read('assets/js/pages.js');
+  return p.includes("addEventListener('touchcancel'") && p.includes("addEventListener('visibilitychange'");
+})());
+
+// ════════ 總結 ════════
+console.log(`\n${fail ? '✗ 失敗' : '✓ 全部通過'} — ${pass} 通過 / ${fail} 失敗`);
+process.exit(fail ? 1 : 0);

@@ -1,0 +1,42 @@
+{
+  "name": "雙葉書庫 Futaba",
+  "short_name": "Futaba",
+  "description": "個人書評與聽書筆記",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#221a12",
+  "theme_color": "#33281a",
+  "orientation": "portrait",
+  "lang": "zh-TW",
+  "categories": [
+    "productivity",
+    "utilities"
+  ],
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-mask-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/icons/icon-mask-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "scope": "./"
+}

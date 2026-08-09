@@ -1,0 +1,21 @@
+# 個人資料（書評內容、設定、備份）—— 絕不上傳
+data/
+*.bak.*.json
+
+# 打包成品
+*.zip
+
+# 系統與編輯器
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+
+# Node（測試用，本專案無相依套件）
+node_modules/
