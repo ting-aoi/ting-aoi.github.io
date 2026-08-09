@@ -1,5 +1,5 @@
-// Futaba SW — BUILD: 1786282580
-const BUILD = '1786282580';
+// Futaba SW — BUILD: 1786283490
+const BUILD = '1786283490';
 const CACHE = 'futaba-' + BUILD;
 const STATIC = [
   './manifest.json',
