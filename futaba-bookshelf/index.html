@@ -31,24 +31,63 @@
 <title>雙葉書庫</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="assets/css/main.css?v=1786281074">
+<link rel="stylesheet" href="assets/css/main.css?v=1786282580">
 </head>
 <body>
 
+<!-- v3.6 圖示庫：35 顆內嵌 SVG（currentColor 雙主題）-->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="5.6"/><path d="M15.2 15.2 20 20"/></symbol>
+<symbol id="i-close" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11.2 12 4l8 7.2"/><path d="M6.3 9.8V20h11.4V9.8"/><path d="M10 20v-5h4v5"/></symbol>
+<symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15"/><path d="M9.3 7V5.4c0-.8.6-1.4 1.4-1.4h2.6c.8 0 1.4.6 1.4 1.4V7"/><path d="M6.5 7l.9 12.2c0 .5.4.8.9.8h7.4c.5 0 .9-.3.9-.8L17.5 7"/><path d="M10 10.5v6M14 10.5v6"/></symbol>
+<symbol id="i-gear" viewBox="0 0 24 24"><path d="M9.91 2.63 14.09 2.63 13.13 4.89 16.23 6.18 17.14 3.89 20.11 6.86 17.82 7.77 19.11 10.87 21.37 9.91 21.37 14.09 19.11 13.13 17.82 16.23 20.11 17.14 17.14 20.11 16.23 17.82 13.13 19.11 14.09 21.37 9.91 21.37 10.87 19.11 7.77 17.82 6.86 20.11 3.89 17.14 6.18 16.23 4.89 13.13 2.63 14.09 2.63 9.91 4.89 10.87 6.18 7.77 3.89 6.86 6.86 3.89 7.77 6.18 10.87 4.89z"/><circle cx="12" cy="12" r="3"/></symbol>
+<symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.6"/><rect x="13" y="4" width="7" height="7" rx="1.6"/><rect x="4" y="13" width="7" height="7" rx="1.6"/><rect x="13" y="13" width="7" height="7" rx="1.6"/></symbol>
+<symbol id="i-library" viewBox="0 0 24 24"><path d="M4.5 4.6h3.2v15H4.5zM9.4 4.6h3.2v15H9.4z"/><path d="M15.9 19.6 12.5 5l3.1-.7 3.4 14.6z"/><path d="M3.5 19.6h17"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 20h16"/><path d="M7 20v-6M12 20V9M17 20V5"/></symbol>
+<symbol id="i-pen" viewBox="0 0 24 24"><path d="M8.2 3.8h7.6l1.4 6L12 20.2 6.8 9.8z"/><circle cx="12" cy="9.4" r="1.1"/><path d="M12 10.5v5.3"/></symbol>
+<symbol id="i-tag" viewBox="0 0 24 24"><path d="M12.6 3.8 20 11.2c.6.6.6 1.5 0 2.1l-6.7 6.7c-.6.6-1.5.6-2.1 0L3.8 12.6a1.5 1.5 0 0 1-.4-1V5c0-.9.7-1.6 1.6-1.6h6.6c.4 0 .7.1 1 .4z"/><circle cx="8.3" cy="8.3" r="1.1" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-backup" viewBox="0 0 24 24"><path d="M5.5 4h11L20 7.5V18.5c0 .8-.7 1.5-1.5 1.5h-13c-.8 0-1.5-.7-1.5-1.5v-13C4 4.7 4.7 4 5.5 4z"/><path d="M8 4v4.5h7V4"/><rect x="8" y="13" width="8" height="7"/></symbol>
+<symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="5.5" y="5" width="13" height="16" rx="1.8"/><path d="M9.5 5c0-1.2 1.1-2.2 2.5-2.2S14.5 3.8 14.5 5"/><path d="M9 11h6M9 15h6"/></symbol>
+<symbol id="i-toolbox" viewBox="0 0 24 24"><rect x="3.5" y="8.5" width="17" height="11" rx="1.8"/><path d="M9 8.5V7c0-.8.7-1.5 1.5-1.5h3c.8 0 1.5.7 1.5 1.5v1.5"/><path d="M3.5 13.5h17"/><path d="M10.5 12.5h3v2h-3z"/></symbol>
+<symbol id="i-device" viewBox="0 0 24 24"><rect x="7" y="3.5" width="10" height="17" rx="2"/><path d="M11 17.8h2"/></symbol>
+<symbol id="i-headphones" viewBox="0 0 24 24"><path d="M4.5 15v-2.5a7.5 7.5 0 0 1 15 0V15"/><rect x="3.8" y="14" width="4" height="6" rx="1.6"/><rect x="16.2" y="14" width="4" height="6" rx="1.6"/></symbol>
+<symbol id="i-book-open" viewBox="0 0 24 24"><path d="M12 6.5C10.7 5 8.6 4.2 4 4.3v13.9c4.6-.1 6.7.7 8 2.1 1.3-1.4 3.4-2.2 8-2.1V4.3c-4.6-.1-6.7.7-8 2.2z"/><path d="M12 6.5v13.8"/></symbol>
+<symbol id="i-people" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.2"/><path d="M3.5 19.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5"/><path d="M15.5 5.7a3.2 3.2 0 0 1 0 5.7M17.3 14.9c1.9.8 3.2 2.4 3.2 4.6"/></symbol>
+<symbol id="i-note" viewBox="0 0 24 24"><path d="M5 4.5h14v10.5L14.5 19.5H5z"/><path d="M14.5 19.5V15H19"/><path d="M8.5 9h7M8.5 12.5h4"/></symbol>
+<symbol id="i-pencil" viewBox="0 0 24 24"><path d="m15.5 4.5 4 4L8.8 19.2l-4.6.6.6-4.6z"/><path d="M13.4 6.6 17.4 10.6"/></symbol>
+<symbol id="i-health" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.2"/><path d="M5.5 12h3.4l1.6-3.5 2.4 6.5 1.7-3h3.9"/></symbol>
+<symbol id="i-refresh" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 0 1 7.5-7.5c2.2 0 4.2.9 5.7 2.4l1.8 1.7"/><path d="M19.5 4.5v4.1h-4.1"/><path d="M19.5 12a7.5 7.5 0 0 1-7.5 7.5c-2.2 0-4.2-.9-5.7-2.4l-1.8-1.7"/><path d="M4.5 19.5v-4.1h4.1"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M19.5 14.2A8 8 0 0 1 9.8 4.5a8 8 0 1 0 9.7 9.7z"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2.8v2M12 19.2v2M21.2 12h-2M4.8 12h-2M18.5 5.5 17 7M7 17l-1.5 1.5M18.5 18.5 17 17M7 7 5.5 5.5"/></symbol>
+<symbol id="i-pin" viewBox="0 0 24 24"><path d="M9 3.5h6l-.8 6 2.8 3v1.5H7V12.5l2.8-3z"/><path d="M12 14v6.5"/></symbol>
+<symbol id="i-mic" viewBox="0 0 24 24"><rect x="9.2" y="3.5" width="5.6" height="10" rx="2.8"/><path d="M6 11.5a6 6 0 0 0 12 0"/><path d="M12 17.5v3"/></symbol>
+<symbol id="i-robot" viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="10.5" rx="2.5"/><path d="M12 8V4.8M12 4.8a1.2 1.2 0 1 0-.1 0z"/><circle cx="9.2" cy="12.6" r="1" fill="currentColor" stroke="none"/><circle cx="14.8" cy="12.6" r="1" fill="currentColor" stroke="none"/><path d="M9.5 15.8h5"/></symbol>
+<symbol id="i-speaker" viewBox="0 0 24 24"><path d="M4.5 9.5v5H8l4.5 3.8V5.7L8 9.5z"/><path d="M15.5 9.2a4 4 0 0 1 0 5.6M18 6.7a7.5 7.5 0 0 1 0 10.6"/></symbol>
+<symbol id="i-sort" viewBox="0 0 24 24"><path d="M8 19V5M8 5 4.8 8.2M8 5l3.2 3.2"/><path d="M16 5v14M16 19l-3.2-3.2M16 19l3.2-3.2"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-export" viewBox="0 0 24 24"><path d="M4.5 14v4c0 1 .8 1.8 1.8 1.8h11.4c1 0 1.8-.8 1.8-1.8v-4"/><path d="M12 14.5V4M12 4 8.5 7.5M12 4l3.5 3.5"/></symbol>
+<symbol id="i-import" viewBox="0 0 24 24"><path d="M4.5 14v4c0 1 .8 1.8 1.8 1.8h11.4c1 0 1.8-.8 1.8-1.8v-4"/><path d="M12 4v10.5M12 14.5 8.5 11M12 14.5l3.5-3.5"/></symbol>
+<symbol id="i-warn" viewBox="0 0 24 24"><path d="M12 4 2.8 19.5h18.4z"/><path d="M12 10v4.2"/><circle cx="12" cy="16.8" r=".9" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-check" viewBox="0 0 24 24"><path d="m5 12.5 4.5 4.5L19 7.5"/></symbol>
+<symbol id="i-box" viewBox="0 0 24 24"><path d="M4 8.2 12 4l8 4.2v8L12 20.5 4 16.2z"/><path d="M4 8.2 12 12l8-3.8M12 12v8.5"/></symbol>
+</defs></svg>
+
 <div id="header">
-  <button class="hbtn" id="toggle-sb">☰</button>
+  <button class="hbtn" id="toggle-sb"><svg class="ic"><use href="#i-menu"/></svg></button>
   <button class="logo" id="logo-home-btn">雙葉<span>書庫</span></button>
   <div class="header-search">
-    <span style="color:rgba(255,255,255,0.25);font-size:12px">🔍</span>
+    <span style="color:rgba(255,255,255,0.25);font-size:12px"><svg class="ic"><use href="#i-search"/></svg></span>
     <input type="text" id="search" placeholder="書名 / 作者 / #標籤 / @人名 / ~內文…" autocomplete="off"><button id="search-clear" style="display:none" aria-label="清除搜尋">✕</button>
   </div>
-  <button class="hbtn nav-only" id="home-btn" title="主頁">🏠</button>
-  <button class="hbtn nav-only" id="trash-btn" title="回收桶">🗑</button>
-  <button class="hbtn nav-only" id="settings-btn" title="設定">⚙</button>
-  <button class="hbtn" id="apps-btn" title="功能">⊞</button>
+  <button class="hbtn nav-only" id="home-btn" title="主頁"><svg class="ic"><use href="#i-home"/></svg></button>
+  <button class="hbtn nav-only" id="trash-btn" title="回收桶"><svg class="ic"><use href="#i-trash"/></svg></button>
+  <button class="hbtn nav-only" id="settings-btn" title="設定"><svg class="ic"><use href="#i-gear"/></svg></button>
+  <button class="hbtn" id="apps-btn" title="功能"><svg class="ic"><use href="#i-grid"/></svg></button>
 </div>
 
-<div id="demo-banner">📖 展示模式 — 這裡的資料只存在你的瀏覽器，歡迎隨意試玩</div>
+<div id="demo-banner"><svg class="ic"><use href="#i-book-open"/></svg> 展示模式 — 這裡的資料只存在你的瀏覽器，歡迎隨意試玩</div>
 
 <div id="main">
   <div id="overlay" onclick="FT.closeSb()"></div>
@@ -71,12 +110,12 @@
       <span id="batch-count" class="batch-count"></span>
       <select id="batch-progress" onchange="FT.batchSetProgress(this.value);this.value=''"></select>
       <button onclick="FT.batchAddTag()">＋標籤</button>
-      <button class="batch-danger" onclick="FT.batchTrash()">🗑</button>
+      <button class="batch-danger" onclick="FT.batchTrash()"><svg class="ic"><use href="#i-trash"/></svg></button>
       <button onclick="FT.exitBatch()">取消</button>
     </div>
     <div class="sb-bottom">
-      <button class="sb-nav" id="apps-sb-btn">🧰 功能</button>
-      <button class="sb-nav" id="settings-sb-btn">⚙️ 設定</button>
+      <button class="sb-nav" id="apps-sb-btn"><svg class="ic"><use href="#i-toolbox"/></svg> 功能</button>
+      <button class="sb-nav" id="settings-sb-btn"><svg class="ic"><use href="#i-gear"/></svg> 設定</button>
     </div>
   </div>
 
@@ -121,7 +160,7 @@
       <div class="note-scroll">
         <div class="note-body">
           <div class="section">
-            <div class="sec-title">📋 基本資料</div>
+            <div class="sec-title"><svg class="ic"><use href="#i-clipboard"/></svg> 基本資料</div>
             <div class="fields-grid">
               <div class="field"><label>作者</label><input type="text" id="f-author" placeholder="作者名稱"></div>
               <div class="field">
@@ -145,14 +184,14 @@
             </div>
           </div>
           <div class="section">
-            <div class="sec-title">📱 平台資訊</div>
+            <div class="sec-title"><svg class="ic"><use href="#i-device"/></svg> 平台資訊</div>
             <div class="fields-grid">
               <div class="field"><label>閱讀平台</label><select id="f-text-platform"></select></div>
               <div class="field"><label>聽書平台</label><select id="f-audio-platform"></select></div>
             </div>
           </div>
           <div class="section" id="cv-fields-section">
-            <div class="sec-title">🎧 聽書體驗</div>
+            <div class="sec-title"><svg class="ic"><use href="#i-headphones"/></svg> 聽書體驗</div>
             <div class="fields-grid">
               <div class="field"><label>配音類型</label><select id="f-cv-type"></select></div>
               <div class="field"><label>AI 配音</label><select id="f-ai-cv"></select></div>
@@ -161,15 +200,15 @@
             </div>
           </div>
           <div class="section">
-            <div class="sec-title">📖 劇情簡介</div>
+            <div class="sec-title"><svg class="ic"><use href="#i-book-open"/></svg> 劇情簡介</div>
             <div class="field"><textarea id="f-synopsis" class="tall" placeholder="簡短描述故事大綱…"></textarea></div>
           </div>
           <div class="section">
-            <div class="sec-title">✍️ 個人心得</div>
+            <div class="sec-title"><svg class="ic"><use href="#i-pen"/></svg> 個人心得</div>
             <div class="field"><textarea id="f-review" class="tall" placeholder="閱讀感受、推薦指數…"></textarea></div>
           </div>
           <div class="section">
-            <div class="sec-title">👥 重要角色</div>
+            <div class="sec-title"><svg class="ic"><use href="#i-people"/></svg> 重要角色</div>
             <div class="char-list" id="char-list"></div>
             <div class="char-add-row" id="char-add-row">
               <input class="char-name-in" type="text" id="char-name-in" placeholder="@人名">
@@ -179,11 +218,11 @@
             </div>
           </div>
           <div class="section">
-            <div class="sec-title">📝 備註</div>
+            <div class="sec-title"><svg class="ic"><use href="#i-note"/></svg> 備註</div>
             <div class="field"><textarea id="f-notes" placeholder="備註…"></textarea></div>
           </div>
           <div style="margin-top:28px;padding-bottom:20px" id="delete-row">
-            <button id="delete-btn" class="act-btn danger">🗑 移至回收桶</button>
+            <button id="delete-btn" class="act-btn danger"><svg class="ic"><use href="#i-trash"/></svg> 移至回收桶</button>
             <button id="export-book-btn" class="act-btn export-md" onclick="FT.exportBook()">↓ 匯出 MD</button>
           </div>
         </div>
@@ -195,7 +234,7 @@
       <div class="page-inner">
         <div class="trash-max">
           <div class="page-title">
-            <span>🗑 回收桶</span>
+            <span><svg class="ic"><use href="#i-trash"/></svg> 回收桶</span>
             <button class="danger-sm" id="empty-trash-btn">全部永久刪除</button>
           </div>
           <div class="trash-hint">已刪除的書評保留在此，可還原或永久刪除。</div>
@@ -208,14 +247,14 @@
     <div class="page" id="settings-page">
       <div class="page-inner">
         <div class="settings-max">
-          <div class="page-title" style="margin-bottom:14px">⚙ 設定</div>
+          <div class="page-title" style="margin-bottom:14px"><svg class="ic"><use href="#i-gear"/></svg> 設定</div>
           <div class="settings-tabs">
-            <button class="settings-tab on" data-stab="general" onclick="FT.switchSettingsTab('general',this)">⚙️ 一般</button>
-            <button class="settings-tab" data-stab="book" onclick="FT.switchSettingsTab('book',this)">📖 書目</button>
-            <button class="settings-tab" data-stab="audio" onclick="FT.switchSettingsTab('audio',this)">🎧 有聲</button>
+            <button class="settings-tab on" data-stab="general" onclick="FT.switchSettingsTab('general',this)"><svg class="ic"><use href="#i-gear"/></svg> 一般</button>
+            <button class="settings-tab" data-stab="book" onclick="FT.switchSettingsTab('book',this)"><svg class="ic"><use href="#i-book-open"/></svg> 書目</button>
+            <button class="settings-tab" data-stab="audio" onclick="FT.switchSettingsTab('audio',this)"><svg class="ic"><use href="#i-headphones"/></svg> 有聲</button>
           </div>
           <div class="settings-sec" data-tab="book">
-            <div class="settings-sec-title">✏️ 新書預設值</div>
+            <div class="settings-sec-title"><svg class="ic"><use href="#i-pencil"/></svg> 新書預設值</div>
             <div class="settings-hint" style="margin-bottom:10px">建立新書評時自動帶入，加快輸入。</div>
             <div class="fields-grid">
               <div class="field"><label>預設閱讀平台</label>
@@ -228,9 +267,9 @@
           </div>
 
           <div class="settings-sec" data-tab="general">
-            <div class="settings-sec-title">🩺 資料維護</div>
+            <div class="settings-sec-title"><svg class="ic"><use href="#i-health"/></svg> 資料維護</div>
             <div class="settings-hint" style="margin-bottom:10px">檢查伺服器上是否有不在書庫索引中的書評檔案（可救回或清除）。每日首次存檔時自動建立備份，僅保留最近數份（份數見下方狀態）。</div>
-            <button class="io-act" id="orphan-scan-btn" style="max-width:240px" onclick="FT.runOrphanScan()">🔍 掃描孤兒檔案</button>
+            <button class="io-act" id="orphan-scan-btn" style="max-width:240px" onclick="FT.runOrphanScan()"><svg class="ic"><use href="#i-search"/></svg> 掃描孤兒檔案</button>
             <div class="settings-hint" style="margin-top:10px">備份狀態：<span id="backup-info">檢查中…</span></div>
             <button class="io-act" id="backup-now-btn" style="max-width:240px" onclick="FT.backupNow()">🗄️ 立即備份</button>
             <div class="toggle-row" style="margin-top:10px">
@@ -240,13 +279,13 @@
           </div>
 
           <div class="settings-sec" data-tab="general">
-            <div class="settings-sec-title">🔄 系統更新</div>
+            <div class="settings-sec-title"><svg class="ic"><use href="#i-refresh"/></svg> 系統更新</div>
             <div class="settings-hint" style="margin-bottom:10px">目前版本：<span id="settings-ver">—</span>。若加入桌面的 App 卡在舊版本，可強制更新：清除全部快取並重新載入，書評資料不受影響。也可直接在網址列輸入 <b>/#update</b> 觸發。</div>
-            <button class="io-act io-act-pri" style="width:100%" onclick="FT.forceUpdate()">🔄 強制更新（清除快取並重新載入）</button>
+            <button class="io-act io-act-pri" style="width:100%" onclick="FT.forceUpdate()"><svg class="ic"><use href="#i-refresh"/></svg> 強制更新（清除快取並重新載入）</button>
           </div>
 
           <div class="settings-sec" data-tab="general">
-            <div class="settings-sec-title">🌙 外觀</div>
+            <div class="settings-sec-title"><svg class="ic"><use href="#i-moon"/></svg> 外觀</div>
             <div class="toggle-row">
               <div><div class="toggle-label">夜間模式</div><div class="toggle-desc">深色背景，保護夜間視力</div></div>
               <label class="toggle"><input type="checkbox" id="night-toggle"><span class="toggle-track"></span></label>
@@ -258,12 +297,12 @@
           </div>
 
           <div class="settings-sec" data-tab="book">
-            <div class="settings-sec-title">📌 狀態選項</div>
+            <div class="settings-sec-title"><svg class="ic"><use href="#i-pin"/></svg> 狀態選項</div>
             <div id="status-manage-list"></div>
           </div>
 
           <div class="settings-sec" data-tab="book">
-            <div class="settings-sec-title">📖 閱讀平台</div>
+            <div class="settings-sec-title"><svg class="ic"><use href="#i-book-open"/></svg> 閱讀平台</div>
             <div class="edit-list" id="text-platform-list"></div>
             <div class="add-row">
               <input type="text" id="text-platform-input" placeholder="新增閱讀平台…" autocomplete="off" onkeydown="if(event.key==='Enter')FT.addPlatform('text')">
@@ -272,7 +311,7 @@
           </div>
 
           <div class="settings-sec" data-tab="audio">
-            <div class="settings-sec-title">🎧 聽書平台</div>
+            <div class="settings-sec-title"><svg class="ic"><use href="#i-headphones"/></svg> 聽書平台</div>
             <div class="edit-list" id="audio-platform-list"></div>
             <div class="add-row">
               <input type="text" id="audio-platform-input" placeholder="新增聽書平台…" autocomplete="off" onkeydown="if(event.key==='Enter')FT.addPlatform('audio')">
@@ -281,7 +320,7 @@
           </div>
 
           <div class="settings-sec" data-tab="audio">
-            <div class="settings-sec-title">🎙 配音類型選項</div>
+            <div class="settings-sec-title"><svg class="ic"><use href="#i-mic"/></svg> 配音類型選項</div>
             <div class="edit-list" id="cv-type-list"></div>
             <div class="add-row">
               <input type="text" id="cv-type-input" placeholder="新增配音類型…" autocomplete="off" onkeydown="if(event.key==='Enter')FT.addCvOption('cvType')">
@@ -290,7 +329,7 @@
           </div>
 
           <div class="settings-sec" data-tab="audio">
-            <div class="settings-sec-title">🤖 AI 配音選項</div>
+            <div class="settings-sec-title"><svg class="ic"><use href="#i-robot"/></svg> AI 配音選項</div>
             <div class="edit-list" id="ai-cv-list"></div>
             <div class="add-row">
               <input type="text" id="ai-cv-input" placeholder="新增AI配音選項…" autocomplete="off" onkeydown="if(event.key==='Enter')FT.addCvOption('aiCv')">
@@ -299,7 +338,7 @@
           </div>
 
           <div class="settings-sec" data-tab="audio">
-            <div class="settings-sec-title">🔄 換 CV 選項</div>
+            <div class="settings-sec-title"><svg class="ic"><use href="#i-refresh"/></svg> 換 CV 選項</div>
             <div class="edit-list" id="cv-change-list"></div>
             <div class="add-row">
               <input type="text" id="cv-change-input" placeholder="新增換CV選項…" autocomplete="off" onkeydown="if(event.key==='Enter')FT.addCvOption('cvChange')">
@@ -308,7 +347,7 @@
           </div>
 
           <div class="settings-sec" data-tab="audio">
-            <div class="settings-sec-title">🔊 聲音體驗選項</div>
+            <div class="settings-sec-title"><svg class="ic"><use href="#i-speaker"/></svg> 聲音體驗選項</div>
             <div class="edit-list" id="voice-exp-list"></div>
             <div class="add-row">
               <input type="text" id="voice-exp-input" placeholder="新增聲音體驗選項…" autocomplete="off" onkeydown="if(event.key==='Enter')FT.addCvOption('voiceExp')">
@@ -327,8 +366,8 @@
       <div class="page-inner">
         <div class="apps-max">
           <div class="apps-title-row">
-            <div class="page-title" style="margin-bottom:0">🧰 功能</div>
-            <button class="apps-sort-btn" id="apps-sort-btn" onclick="FT.toggleAppsSort()">⇅ 排序</button>
+            <div class="page-title" style="margin-bottom:0"><svg class="ic"><use href="#i-toolbox"/></svg> 功能</div>
+            <button class="apps-sort-btn" id="apps-sort-btn" onclick="FT.toggleAppsSort()"><svg class="ic"><use href="#i-sort"/></svg> 排序</button>
           </div>
           <div class="apps-grid" id="apps-grid"></div>
         </div>
@@ -339,7 +378,7 @@
     <div class="page" id="library-page">
       <div class="page-inner">
         <div class="settings-max">
-          <div class="page-title" style="margin-bottom:16px">📚 書庫</div>
+          <div class="page-title" style="margin-bottom:16px"><svg class="ic"><use href="#i-library"/></svg> 書庫</div>
           <div id="library-content"></div>
         </div>
       </div>
@@ -349,7 +388,7 @@
     <div class="page" id="tags-page">
       <div class="page-inner">
         <div class="settings-max">
-          <div class="page-title" style="margin-bottom:6px">🏷 標籤</div>
+          <div class="page-title" style="margin-bottom:6px"><svg class="ic"><use href="#i-tag"/></svg> 標籤</div>
           <div class="settings-hint" style="margin-bottom:14px">管理標籤字典：新增、改名、分組、合併；使用中的標籤無法刪除。</div>
 
             <div class="edit-list" id="settings-tag-list"></div>
@@ -379,7 +418,7 @@
     <div class="page" id="authors-page">
       <div class="page-inner">
         <div class="settings-max">
-          <div class="page-title" style="margin-bottom:16px">✍️ 作者</div>
+          <div class="page-title" style="margin-bottom:16px"><svg class="ic"><use href="#i-pen"/></svg> 作者</div>
           <div id="authors-content"></div>
         </div>
       </div>
@@ -389,12 +428,12 @@
     <div class="page" id="backup-page">
       <div class="page-inner">
         <div class="settings-max">
-          <div class="page-title" style="margin-bottom:14px">💾 備份</div>
+          <div class="page-title" style="margin-bottom:14px"><svg class="ic"><use href="#i-backup"/></svg> 備份</div>
           <div class="settings-hint" style="margin-bottom:16px">書評與設定的匯出／匯入。建議定期匯出「全部備份」保存。</div>
 
           <div class="io-card" style="margin-bottom:14px">
             <div class="io-card-head">
-              <span class="io-ico">📦</span>
+              <span class="io-ico"><svg class="ic"><use href="#i-box"/></svg></span>
               <div class="io-card-text">
                 <div class="io-card-title">全部備份</div>
                 <div class="io-card-desc">書評與設定完整打包，建議定期保存</div>
@@ -410,7 +449,7 @@
 
           <div class="io-card" style="margin-bottom:14px">
             <div class="io-card-head">
-              <span class="io-ico">📚</span>
+              <span class="io-ico"><svg class="ic"><use href="#i-library"/></svg></span>
               <div class="io-card-text">
                 <div class="io-card-title">書評資料</div>
                 <div class="io-card-desc">僅書評與回收桶，不含設定</div>
@@ -426,7 +465,7 @@
 
           <div class="io-card">
             <div class="io-card-head">
-              <span class="io-ico">⚙️</span>
+              <span class="io-ico"><svg class="ic"><use href="#i-gear"/></svg></span>
               <div class="io-card-text">
                 <div class="io-card-title">設定檔</div>
                 <div class="io-card-desc">平台、狀態選項與標籤字典</div>
@@ -448,7 +487,7 @@
     <div class="page" id="stats-page">
       <div class="page-inner">
         <div class="stats-max">
-          <div class="page-title" style="margin-bottom:16px">📊 統計分析</div>
+          <div class="page-title" style="margin-bottom:16px"><svg class="ic"><use href="#i-chart"/></svg> 統計分析</div>
           <div id="stats-content">
             <div style="font-size:13px;color:var(--ink3);padding:20px 0">載入中…</div>
           </div>
@@ -460,7 +499,7 @@
     <div class="page" id="changelog-page">
       <div class="page-inner">
         <div class="settings-max">
-          <div class="page-title" style="margin-bottom:14px">📋 更新日誌</div>
+          <div class="page-title" style="margin-bottom:14px"><svg class="ic"><use href="#i-clipboard"/></svg> 更新日誌</div>
           <div id="changelog-content">
             <div style="font-size:13px;color:var(--ink3);padding:20px 0">載入中…</div>
           </div>
@@ -474,12 +513,12 @@
 
 <!-- 橫式攔截層：手機橫放時全螢幕提示，媒體查詢限定觸控裝置＋矮視窗，桌面瀏覽器不受影響 -->
 <div id="rotate-guard">
-  <div class="rg-icon">📱</div>
+  <div class="rg-icon"><svg class="ic"><use href="#i-device"/></svg></div>
   <div class="rg-text">請將裝置轉回直式使用</div>
 </div>
 
 <div id="statusbar">
-  <span id="stat-note">雙葉書庫</span> <span id="stat-ver">v3.5</span>
+  <span id="stat-note">雙葉書庫</span> <span id="stat-ver">v3.6</span>
   <span id="stat-count" style="margin-left:auto"></span>
   <span id="stat-save">✓ 已儲存</span>
 </div>
@@ -488,7 +527,7 @@
 <div id="tag-modal">
   <div id="tag-panel" onclick="event.stopPropagation()">
     <div class="modal-title">
-      <span>🏷 選擇標籤</span>
+      <span><svg class="ic"><use href="#i-tag"/></svg> 選擇標籤</span>
       <button class="modal-close" onclick="FT.closeTagModal()">✕</button>
     </div>
     <div class="add-row">
@@ -508,7 +547,7 @@
 <!-- CONFLICT MODAL -->
 <div id="conflict-modal" style="display:none;position:fixed;inset:0;z-index:300;background:rgba(0,0,0,0.6);backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:20px">
   <div style="background:var(--paper);border-radius:14px;width:100%;max-width:400px;padding:22px;display:flex;flex-direction:column;gap:14px;box-shadow:0 20px 60px rgba(0,0,0,0.35)">
-    <div style="font-family:'LXGW WenKai TC',serif;font-size:17px;font-weight:700;color:var(--ink)">⚠️ 偵測到版本衝突</div>
+    <div style="font-family:'LXGW WenKai TC',serif;font-size:17px;font-weight:700;color:var(--ink)"><svg class="ic"><use href="#i-warn"/></svg> 偵測到版本衝突</div>
     <div style="font-size:13px;color:var(--ink2);line-height:1.7">其他裝置剛儲存了新版本的資料。<br>請選擇要保留哪一份：</div>
     <div style="display:flex;gap:10px;flex-direction:column">
       <div id="conflict-diff" style="font-size:12.5px;line-height:1.7;color:var(--ink2);background:var(--paper2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:4px;max-height:180px;overflow-y:auto"></div>
@@ -528,13 +567,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <!-- Futaba modules -->
-<script src="assets/js/storage.js?v=1786281074"></script>
-<script src="assets/js/search.js?v=1786281074"></script>
-<script src="assets/js/ui.js?v=1786281074"></script>
-<script src="assets/js/pages.js?v=1786281074"></script>
-<script src="assets/js/editor.js?v=1786281074"></script>
-<script src="assets/js/settings.js?v=1786281074"></script>
-<script src="assets/js/app.js?v=1786281074"></script>
+<script src="assets/js/storage.js?v=1786282580"></script>
+<script src="assets/js/search.js?v=1786282580"></script>
+<script src="assets/js/ui.js?v=1786282580"></script>
+<script src="assets/js/pages.js?v=1786282580"></script>
+<script src="assets/js/editor.js?v=1786282580"></script>
+<script src="assets/js/settings.js?v=1786282580"></script>
+<script src="assets/js/app.js?v=1786282580"></script>
 
 </body>
 </html>

@@ -39,6 +39,17 @@ chk('v3.5：切頁過場只動 transform/opacity', (() => {
 })());
 chk('v3.5：統一按下回饋', css.includes(':active{transform:scale(0.965)}'));
 chk('v3.5：排序模式按下不縮（拖曳引擎接管 transform）', css.includes('.apps-grid.sorting .app-tile:active{transform:none}'));
+chk('v3.6：SVG sprite 已注入（35 顆）', (html.match(/<symbol id="i-/g) || []).length === 35);
+chk('v3.6：.ic 基礎樣式（currentColor 雙主題）', /svg\.ic\{[^}]*stroke:currentColor/.test(css));
+chk('v3.6：頂欄不再有 emoji 圖示', (() => {
+  const header = html.slice(html.indexOf('id="header"'), html.indexOf('id="main"'));
+  return !/[🏠🗑⚙⊞🔍☰]/u.test(header) && (header.match(/<use href="#i-/g) || []).length >= 6;
+})());
+chk('v3.6：FT.APPS 改用具名圖示', (() => {
+  const p = read('assets/js/pages.js');
+  return p.includes("icon:'home'") && p.includes("icon:'library'") && !/icon:'[^a-z]/.test(p);
+})());
+chk('v3.6：FT.icon 助手存在', read('assets/js/storage.js').includes('FT.icon'));
 chk('v3.1：黏頂面板必須低於側欄', /\.settings-tabs\{[^}]*z-index:10/.test(css) && /\.lib-controls\{[^}]*z-index:10/.test(css) && /#sidebar\{[^}]*z-index:15/.test(css));
 chk('v3.1c：黏頂面板有金框（不像破圖）', /\.settings-tabs\{[^}]*border:1px solid var\(--gold-dim\)/.test(css) && /\.lib-controls\{[^}]*border:1px solid var\(--gold-dim\)/.test(css));
 chk('v3.1：功能標題底線在整列（不被排序鈕截斷）', /\.apps-title-row\{[^}]*border-bottom/.test(css) && css.includes('.apps-title-row .page-title{border-bottom:none'));

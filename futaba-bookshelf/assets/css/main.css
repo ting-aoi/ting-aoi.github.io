@@ -84,6 +84,9 @@ body.night .settings-tab.on{color:#221507}
 /* 設定頁字體統一：全介面黑體，杜絕內容手寫字滲入 */
 #settings-page .settings-sec-body, #settings-page .settings-sec-body *{font-family:'Noto Sans TC','PingFang TC',sans-serif}
 
+/* ── SVG 圖示系統（v3.6）：尺寸吃 font-size、顏色吃 currentColor ── */
+svg.ic{width:1.05em;height:1.05em;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;vertical-align:-0.14em;flex-shrink:0;pointer-events:none}
+
 /* ── RESET ── */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;height:-webkit-fill-available}

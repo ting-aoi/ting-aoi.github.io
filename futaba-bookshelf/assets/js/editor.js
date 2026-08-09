@@ -475,7 +475,7 @@ FT.checkDuplicateTitle = function() {
     if (!el || !titleEl) return;
     const sims = FT.findSimilarBooks(titleEl.value, FT.activeId);
     if (!sims.length) { el.style.display = 'none'; el.innerHTML = ''; return; }
-    el.innerHTML = '⚠ 書庫中已有相似書名：' + sims.map(b =>
+    el.innerHTML = FT.icon('warn') + ' 書庫中已有相似書名：' + sims.map(b =>
       `<a href="javascript:void(0)" onclick="FT.openBook('${FT.escA(b.id)}')">《${FT.escH(b.title)}》</a>`
     ).join('、');
     el.style.display = 'block';

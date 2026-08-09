@@ -81,9 +81,9 @@ FT.onRemoteUpdate = function(remote) {
       const row = (icon, label, list) => list.length
         ? `<div style="margin:4px 0"><b>${icon} ${label}（${list.length}）</b>：${FT.escH(list.slice(0,5).join('、'))}${list.length>5?` 等 ${list.length} 本`:''}</div>`
         : '';
-      const html = row('➕','遠端新增', d.added)
-                 + row('✏️','內容不同', d.modified)
-                 + row('➖','遠端已刪', d.removed);
+      const html = row(FT.icon('plus'),'遠端新增', d.added)
+                 + row(FT.icon('pencil'),'內容不同', d.modified)
+                 + row(FT.icon('trash'),'遠端已刪', d.removed);
       diffEl.innerHTML = html || '<div style="opacity:0.7">（僅版本號不同，書評內容一致）</div>';
     }
     const m = FT.$('conflict-modal');
@@ -144,7 +144,7 @@ FT.renderHome = function() {
   const recent = [...all].sort((a,b) => b.created - a.created).slice(0, 6);
   FT.$('recent-grid').innerHTML = recent.length
     ? recent.map(b => `<div class="recent-card" onclick="FT.openBook('${b.id}')">
-        <span style="font-size:20px">📖</span>
+        <span style="font-size:20px">${FT.icon('book-open')}</span>
         <div class="recent-info">
           <div class="recent-title">${escH(b.title||'（無標題）')}</div>
           <div class="recent-meta">

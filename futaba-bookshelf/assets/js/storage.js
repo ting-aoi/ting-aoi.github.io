@@ -77,6 +77,8 @@ FT.escH    = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/
 FT.escA    = s => String(s).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
 FT.sanitize= s => String(s).replace(/[/\\:*?"<>|]/g,'_').trim()||'untitled';
 FT.nowStamp= () => new Date().toISOString().replace(/[:.]/g,'-').slice(0,19);
+// v3.6 SVG 圖示（index.html 內嵌 sprite），name 對應 #i-<name>
+FT.icon    = (n,style) => '<svg class="ic"'+(style?' style="'+style+'"':'')+'><use href="#i-'+n+'"/></svg>';
 
 FT.showSaved = function() {
   try {

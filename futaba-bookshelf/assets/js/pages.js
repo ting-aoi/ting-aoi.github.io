@@ -10,21 +10,21 @@ var FT = window.FT;
 // ── 功能頁（app 磚牆，v2.7b）──
 // 未來新頁面（作者頁、書櫃…）只要在此登錄表加一格即可。
 FT.APPS = [
-  { id:'home',      icon:'🏠', label:'主頁',     sub:() => Object.keys(FT.books).length + ' 本書評' },
-  { id:'library',   icon:'📚', label:'書庫',     sub:() => Object.keys(FT.books).length + ' 本' },
-  { id:'stats',     icon:'📊', label:'統計分析', sub:() => {
+  { id:'home',      icon:'home', label:'主頁',     sub:() => Object.keys(FT.books).length + ' 本書評' },
+  { id:'library',   icon:'library', label:'書庫',     sub:() => Object.keys(FT.books).length + ' 本' },
+  { id:'stats',     icon:'chart', label:'統計分析', sub:() => {
       const r = FT.avgRating(Object.values(FT.books));
       return r.n ? '平均 ' + r.avg + '★' : '尚無評分';
     } },
-  { id:'authors',   icon:'✍️', label:'作者',     sub:() => {
+  { id:'authors',   icon:'pen', label:'作者',     sub:() => {
       const s = new Set(Object.values(FT.books).map(b => (b.author||'').trim() || '（未填作者）'));
       return s.size + ' 位';
     } },
-  { id:'tags',      icon:'🏷', label:'標籤',     sub:() => (FT.settings.tagDict||[]).length + ' 個' },
-  { id:'trash',     icon:'🗑', label:'回收桶',   sub:() => Object.keys(FT.trash).length + ' 本' },
-  { id:'backup',    icon:'💾', label:'備份',     sub:() => '匯出 / 匯入' },
-  { id:'settings',  icon:'⚙️', label:'設定',     sub:() => FT.settings.nightMode ? '🌙 夜間模式' : '☀️ 日間模式' },
-  { id:'changelog', icon:'📋', label:'更新日誌', sub:() => FT.$('stat-ver').textContent || '' },
+  { id:'tags',      icon:'tag', label:'標籤',     sub:() => (FT.settings.tagDict||[]).length + ' 個' },
+  { id:'trash',     icon:'trash', label:'回收桶',   sub:() => Object.keys(FT.trash).length + ' 本' },
+  { id:'backup',    icon:'backup', label:'備份',     sub:() => '匯出 / 匯入' },
+  { id:'settings',  icon:'gear', label:'設定',     sub:() => FT.settings.nightMode ? '夜間模式' : '日間模式' },
+  { id:'changelog', icon:'clipboard', label:'更新日誌', sub:() => FT.$('stat-ver').textContent || '' },
 ];
 
 // v3.0c 磚牆順序：settings.appsOrder 持久化；未列入的新磚自動附尾
@@ -42,12 +42,12 @@ FT.renderApps = function() {
   if (!grid) return;
   grid.classList.toggle('sorting', !!FT._appsSort);
   const btn = FT.$opt('apps-sort-btn');
-  if (btn) { btn.classList.toggle('on', !!FT._appsSort); btn.textContent = FT._appsSort ? '✓ 完成' : '⇅ 排序'; }
+  if (btn) { btn.classList.toggle('on', !!FT._appsSort); btn.innerHTML = FT._appsSort ? '✓ 完成' : FT.icon('sort')+' 排序'; }
   grid.innerHTML = FT.orderedApps().map(a => {
     let sub = '';
     try { sub = a.sub ? a.sub() : ''; } catch { sub = ''; }
     return `<button class="app-tile" onclick="FT.openApp('${a.id}')">
-      <span class="app-tile-icon">${a.icon}</span>
+      <span class="app-tile-icon">${FT.icon(a.icon)}</span>
       <span class="app-tile-label">${FT.escH(a.label)}</span>
       <span class="app-tile-sub">${FT.escH(sub)}</span>
     </button>`;
@@ -395,14 +395,14 @@ FT.renderStats = function() {
     : '<div class="stats-caption">尚無標籤</div>';
 
   wrap.innerHTML =
-      `<div class="stats-sec"><div class="stats-sec-title">📚 總覽</div>`
+      `<div class="stats-sec"><div class="stats-sec-title">${FT.icon('library')} 總覽</div>`
     +   `<div class="stats-grid">${overview}</div></div>`
-    + `<div class="stats-sec"><div class="stats-sec-title">⭐ 評分分佈</div>`
+    + `<div class="stats-sec"><div class="stats-sec-title"><span class="gilt-star">★</span> 評分分佈</div>`
     +   `<div class="stats-caption">已評分 ${ratedN} 本 · 平均 ${ratedAvg}★</div>${ratingRows}</div>`
-    + `<div class="stats-sec"><div class="stats-sec-title">📱 平台</div>`
+    + `<div class="stats-sec"><div class="stats-sec-title">${FT.icon('device')} 平台</div>`
     +   platBlock('小說平台', 'textPlatform')
     +   platBlock('有聲平台', 'audioPlatform') + `</div>`
-    + `<div class="stats-sec"><div class="stats-sec-title">🏷 熱門標籤 TOP 20</div>`
+    + `<div class="stats-sec"><div class="stats-sec-title">${FT.icon('tag')} 熱門標籤 TOP 20</div>`
     +   `<div class="stats-caption">點一下直接搜尋該標籤。</div>${tagRows}</div>`;
 };
 
