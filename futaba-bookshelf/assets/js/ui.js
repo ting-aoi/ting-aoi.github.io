@@ -27,6 +27,9 @@ FT.applyNightMode = function(on) {
 FT.showPage = function(page, opts, fromPop) {
   // 切換頁面時清除搜尋殘留：避免搜尋結果層蓋住新頁面（需手動清字才看得到的問題）
   if (window._searchQ) FT.clearSearch();
+  // v3.6c 任何導航一律收起側欄（中央處理）：頂欄 logo/主頁/回收桶/設定/功能鍵
+  // 過去各自接線漏收；桌面版側欄非覆蓋層，移除 open class 無副作用
+  if (FT.closeSb) FT.closeSb();
   FT.currentPage = page;
   // 層級導航（扁平兩層模型）：home=1，其餘頁面一律=2。
   // 主頁→任何頁 push 一層；頁與頁之間切換 replace（不堆疊）。

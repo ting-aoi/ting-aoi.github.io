@@ -125,8 +125,11 @@ chk('v2.9d：退出搜尋後留在原頁', FT.currentPage === 'home');
 chk('v2.9e：✕ 按鈕同步隱藏', env.el('search-clear').style.display === 'none');
 
 // C4 導航層級（鐵律）
+env.el('sidebar').classList.add('open'); env.el('overlay').classList.add('on');
 FT.showPage('stats');
 chk('切頁正常', FT.currentPage === 'stats');
+chk('v3.6c：任何導航一律收起側欄（頂欄鍵曾漏收）',
+  !env.el('sidebar').classList.contains('open') && !env.el('overlay').classList.contains('on'));
 env.fireWin('popstate', { state:{ page:'home' } });
 chk('扁平兩層：任何頁返回即回主頁', FT.currentPage === 'home');
 
