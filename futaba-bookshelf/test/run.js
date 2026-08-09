@@ -199,6 +199,36 @@ chk('拖曳中斷保險齊備', (() => {
   return p.includes("addEventListener('touchcancel'") && p.includes("addEventListener('visibilitychange'");
 })());
 
-// ════════ 總結 ════════
-console.log(`\n${fail ? '✗ 失敗' : '✓ 全部通過'} — ${pass} 通過 / ${fail} 失敗`);
-process.exit(fail ? 1 : 0);
+// ════════ E. 全文搜尋（v3.3）════════
+// async：需先以真實 sc2tc.json 餵入 loadSc2tc；總結隨之移入此塊（D 區同步斷言已先跑完）
+(async () => {
+  G('E 全文搜尋');
+  const realFetch = global.fetch;
+  global.fetch = async () => ({ ok: true, json: async () => JSON.parse(read('assets/sc2tc.json')) });
+  await FT.loadSc2tc();
+  global.fetch = realFetch;
+
+  const bk = { title:'孤帆記', author:'乙', tags:['t1'],
+               characters:[{ name:'葉修', desc:'沉默的舵手' }],
+               synopsis:'一場橫渡的旅程', review:'結尾的燈塔太動人', notes:'第三章重讀' };
+  const m = q => FT.bookMatchesSearch(bk, FT.parseSearch(q));
+
+  chk('v3.3：~ 命中心得內文', m('~燈塔'));
+  chk('v3.3：~ 命中備註與角色描述', m('~重讀') && m('~舵手'));
+  chk('v3.3：~ 不搜書名（範圍正確）', !m('~孤帆'));
+  chk('v3.3：無前綴文字仍只搜書名作者', m('孤帆') && !m('燈塔'));
+  chk('v3.3：多個 ~ 詞為 AND', m('~燈塔 ~旅程') && !m('~燈塔 ~不存在'));
+  chk('v3.3：#標籤 與 ~ 混用', m('#系統流 ~燈塔') && !m('#不存在 ~燈塔'));
+  chk('v3.3：簡體 ~ 查詢命中繁體內文', m('~灯塔') && m('~动人'));
+  chk('v3.3：@人名 簡繁正規化', m('@叶修'));
+  chk('v3.3：長內文不被 64 變體上限截斷', (() => {
+    // 故障注入等價驗證：needle 藏在超長 haystack 尾端——若 haystack 走了變體展開，
+    // 64 上限會把它截成前綴，此斷言必失敗
+    const long = { ...bk, review: '書'.repeat(300) + '深夜燈塔' };
+    return FT.bookMatchesSearch(long, FT.parseSearch('~深夜燈塔'));
+  })());
+
+  // ════════ 總結 ════════
+  console.log(`\n${fail ? '✗ 失敗' : '✓ 全部通過'} — ${pass} 通過 / ${fail} 失敗`);
+  process.exit(fail ? 1 : 0);
+})();

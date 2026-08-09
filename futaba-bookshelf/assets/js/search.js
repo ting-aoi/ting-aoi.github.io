@@ -60,19 +60,28 @@ function searchMatch(hayN, needleN) {
   return needles.some(n => hays.some(h => h.includes(n)));
 }
 
+// Full-text match: haystack is long free text (review/notes…), so it must NOT
+// go through sc2tcVariants (the 64-variant cap would truncate it). Only the
+// needle is variant-expanded; the haystack is matched as plain lowercase.
+function fullTextMatch(hayRaw, needleN) {
+  const hay = String(hayRaw).toLowerCase();
+  return needleN.split('|').some(n => hay.includes(n));
+}
+
 FT.parseSearch = function(q) {
-  const tags = [], chars = [];
+  const tags = [], chars = [], fulls = [];
   const rest = q
     .replace(/#(\S+)/g, (_, t)  => { tags.push(normalizeSearch(t));  return ''; })
-    .replace(/@(\S+)/g, (_, ch) => { chars.push(ch.toLowerCase());   return ''; })
+    .replace(/@(\S+)/g, (_, ch) => { chars.push(normalizeSearch(ch)); return ''; })
+    .replace(/~(\S+)/g, (_, f)  => { fulls.push(normalizeSearch(f)); return ''; })
     .trim();
-  return { tags, chars, rest: normalizeSearch(rest) };
+  return { tags, chars, fulls, rest: normalizeSearch(rest) };
 };
 
 
 // Match a book against parsed search tokens
 FT.bookMatchesSearch = function(b, parsed) {
-  const { tags, chars, rest } = parsed;
+  const { tags, chars, fulls, rest } = parsed;
   const titleN  = normalizeSearch(b.title  || '');
   const authorN = normalizeSearch(b.author || '');
 
@@ -82,8 +91,15 @@ FT.bookMatchesSearch = function(b, parsed) {
   }
   if (chars.length) {
     if (!chars.every(ck =>
-      (b.characters || []).some(c => c.name.toLowerCase().includes(ck))
+      (b.characters || []).some(c => searchMatch(normalizeSearch(c.name || ''), ck))
     )) return false;
+  }
+  if (fulls && fulls.length) {
+    // ~keyword full-text: 簡介＋心得＋備註＋角色描述，多詞 AND（與 #tag 一致）
+    const body = [b.synopsis, b.review, b.notes,
+                  ...(b.characters || []).map(c => c.desc)]
+                 .filter(Boolean).join('\n');
+    if (!fulls.every(fk => fullTextMatch(body, fk))) return false;
   }
   if (rest && !searchMatch(titleN, rest) && !searchMatch(authorN, rest)) return false;
   return true;

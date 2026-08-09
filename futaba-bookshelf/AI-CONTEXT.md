@@ -1,5 +1,5 @@
 # AI-CONTEXT — 雙葉書庫（Futaba）
-> 交接文件 · 對應版本 **v3.2** · 供 AI 助手跨對話接手用。動工前先讀完本檔。
+> 交接文件 · 對應版本 **v3.3** · 供 AI 助手跨對話接手用。動工前先讀完本檔。
 
 ## 0. 一句話
 個人書評 PWA：vanilla JS、全域 `FT` 命名空間、shttps 本地檔案伺服器（localhost:8080）做資料持久化，Android + Brave 為主要環境，使用者 Ting，全程繁體中文。
@@ -31,7 +31,7 @@ booknotes-pwa/
            pages.js(~420行:磚牆/拖排/書庫/標籤頁/作者/統計)
            editor.js(540行:書評表單/星等/角色/標籤)
            settings.js(503行:設定分頁/摺疊/平台/狀態/匯出入)
-           search.js(103行:解析與比對)  app.js(239行:開機/事件/手勢)
+           search.js(119行:解析與比對)  app.js(239行:開機/事件/手勢)
 ```
 - 資料目錄由 `location.pathname` 推導（`_base`），放子資料夾自動跟隨；`/api/` 絕對引用是正確的（shttps API 在伺服器根）。
 - `index.json` 為衍生資料（書 id 清單），匯出**不含**它、匯入時 `saveAll()` 自動重建——這是正確設計，勿「修復」。
@@ -49,7 +49,7 @@ booknotes-pwa/
 ## 4. 工作流（每次交付必守）
 1. 從 `/mnt/user-data/outputs/` 最新 zip 解壓至 `/home/claude/booknotes-pwa`
 2. 修改 → `node --check` 全 JS + CSS 括號平衡檢查
-3. **跑回歸測試集：`node test/run.js`**（v3.2 起固化在 repo，62 條斷言涵蓋歷次修過的 bug）
+3. **跑回歸測試集：`node test/run.js`**（v3.2 起固化在 repo，v3.3 現為 71 條斷言涵蓋歷次修過的 bug）
    - 環境模擬在 `test/dom-stub.js`（`makeEnv()` 一行備妥 window/document/fetch/history/navigator）
    - 改完功能請**補一條對應斷言**再交付；懷疑測試無效時用「故障注入」驗證（故意改壞→確認會失敗）
    - 針對新功能仍可另寫臨時 smoke test，但通用行為一律進 test/run.js
@@ -58,7 +58,7 @@ booknotes-pwa/
    - 自動：改 index.html 版號、sw.js `BUILD='<秒>'`、8 處 `?v=BUILD`、changelog.json、打包
    - zip 檔名含版本（futaba-pwa-v3.1c.zip）、內部資料夾固定 `booknotes-pwa/`、排除 .zip 與 data/index.json、data/settings.json
 6. 刪 outputs 舊 zip → cp 新 zip → present_files
-- 部署方式：Ting 解壓覆蓋 shttps 目錄 → 頁面 `/#update` 一次。
+- 部署方式（v3.3 起雙管道）：①shttps：Ting 解壓覆蓋 shttps 目錄 → 頁面 `/#update` 一次；②GitHub：repo 位於 ting-aoi/ting-aoi.github.io 的 `futaba-bookshelf/` 子資料夾，commit → push `main` → GitHub Pages 自動更新（zip 被 .gitignore 排除不入庫）。
 
 ### 測試雷點（血淚）
 - Node 22 `navigator` 唯讀：mock 要 `Object.defineProperty(globalThis,'navigator',...)`
@@ -89,6 +89,7 @@ booknotes-pwa/
 | changelog | 兩層摺疊（大版本系列→小版本系列）+ 惰性渲染；最新系列預設開 |
 
 ## 7. 互動機制
+- **搜尋語法**（search.js）：`#標籤`、`@人名`、`~內文`（v3.3 起；全文=簡介+心得+備註+角色描述，多詞 AND，可混用）；無前綴文字只搜書名+作者。簡繁比對：**只對查詢詞做變體展開**（sc2tcVariants 有 64 種上限），長原文僅 lowercase 直接 includes——不得把原文丟進變體展開，會被截斷漏比。
 - **手勢**（app.js）：右滑開側欄；左滑=側欄開時關側欄、否則開功能頁（apps-page 加 .slide-in）；搜尋中（window._searchQ）與排序模式（FT._appsSort）停用；防誤觸=位移>70/垂直<60/耗時<600ms/輸入框起點忽略。
 - **返回鍵**：popstate 先攔搜尋（清除+補 pushState 留原頁）；showPage 開頭清搜尋殘留；✕ 按鈕的隱藏收斂在 `FT.clearSearch` 內。
 - **強制更新** `FT.forceUpdate(skipConfirm)`：註銷全部 SW → 清全部快取 → `location.replace(pathname+'?fresh=')`；`#update` hash 開機偵測自動觸發（免確認）。
@@ -96,8 +97,10 @@ booknotes-pwa/
 - 排序下拉 `_sortKey` 不持久化（開機 date-desc）；**無 A→Z 選項**（中文無意義，v3.1a 移除）。
 
 ## 8. 路線圖與待辦
-- **已提案未動工**：側欄改版（A 維持現狀=推薦/B 純導航/C 最近+釘選），等 Ting 選
-- **Icon 更換**：outputs 有 futaba-icon-inventory.md 全站清單，等 Ting 標註後批次換
+- **v3.4 展示模式（已批准，下一版）**：GitHub Pages 訪客可玩沙盒。hostname 閘門 `location.hostname.endsWith('github.io')`（shttps 掛掉絕不誤觸發）；範例資料 `assets/demo.json`（Ting 已提供真實書評備份，書 9 本全收、回收桶不收、設定只收 tagDict+選項清單；**生成後需 Ting 過目才可 push**——會公開上網）；種子條件=展示模式且 localStorage `futaba_v2` 為空；常駐展示橫幅；順手修 `storage.js` `showSaved()` 依 `FT._lastWrite.ok` 區分成敗提示。
+- **已提案未動工（後段不急）**：側欄改版（A 維持現狀=推薦/B 純導航/C 最近+釘選），等 Ting 選
+- **Icon 更換（後段不急）**：outputs 有 futaba-icon-inventory.md 全站清單，等 Ting 標註後批次換
+- **明確不排**：連載追蹤、時間統計、封面圖（v4.0）——Ting 2026-08 規劃時未選
 - 設計文件（outputs）：futaba-v3-spec.md、futaba-v3-font-map.md、兩份 preview html
 - 慣例：每次改版**更新本檔**再打包
 

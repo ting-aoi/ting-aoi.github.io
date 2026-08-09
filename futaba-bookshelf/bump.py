@@ -146,7 +146,9 @@ def pack(version):
             if any(s in f.parts for s in skip_names): continue
             rel = str(f.relative_to(ROOT))
             if rel in skip_files: continue
-            zf.write(f, f.relative_to(ROOT.parent))
+            # 頂層資料夾寫死 booknotes-pwa，不跟隨 repo 資料夾實際名稱
+            # （repo 已改名 futaba-bookshelf，但 Ting 的 shttps 部署目錄仍是 booknotes-pwa）
+            zf.write(f, Path('booknotes-pwa') / f.relative_to(ROOT))
     print(f'  {out.name}: {out.stat().st_size // 1024} KB')
 
 # ── Main ──
