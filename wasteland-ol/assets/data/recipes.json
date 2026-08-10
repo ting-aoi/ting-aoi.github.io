@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "_note": "合成配方表。合成台系統依鎖定決策延後，本檔先佔檔位以固定 schema。內容一律由 Ting 提供。",
+  "_fields": {
+    "id": "字串，唯一鍵",
+    "name": "顯示名稱",
+    "cost": "陣列，[{ itemId, count }]",
+    "output": "{ itemId, count }",
+    "ap": "整數，合成消耗的行動點"
+  },
+  "recipes": []
+}

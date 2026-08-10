@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "_note": "怪物表。內容一律由 Ting 提供，AI 不得生成佔位怪物（鎖定決策）。",
+  "_fields": {
+    "id": "字串，唯一鍵，如 'crab_rust'",
+    "name": "顯示名稱",
+    "hp": "整數，生命值（敵人無體力）",
+    "atk": "整數，攻擊",
+    "def": "整數，防禦",
+    "spd": "整數，速度（決定先攻與玩家撤退率）",
+    "hit": "整數百分比，命中",
+    "eva": "整數百分比，閃避",
+    "crit": "整數百分比，爆擊率（選填，預設 0）",
+    "critMult": "整數百分比，爆傷倍率（選填，預設 150）",
+    "pattern": "陣列，固定行動表，逐回合循環，元素為 'attack' | 'guard' | 'rest'",
+    "drops": "陣列，[{ itemId, min, max, chance }]，chance 為整數百分比",
+    "svg": "選填，怪物剪影 SVG 的 sprite id（貝茲曲線剪影畫法，禁止幾何圖形拼貼）"
+  },
+  "_example": {
+    "id": "example_only_not_shipped",
+    "name": "（範例，不是遊戲內容）",
+    "hp": 20, "atk": 5, "def": 2, "spd": 6, "hit": 70, "eva": 5,
+    "pattern": ["attack", "attack", "guard"],
+    "drops": [{ "itemId": "scrap_iron", "min": 1, "max": 2, "chance": 60 }]
+  },
+  "monsters": []
+}

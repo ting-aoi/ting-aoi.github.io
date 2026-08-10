@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "_note": "屬性與衍生數值的係數表。程式碼不寫死任何數值，調平衡只改本檔。v0.1 為提案值，待 Ting 確認。",
+  "_derivedFormula": "值 = round(base + Σ(屬性值 × per[屬性]))，再套 min/max 夾限",
+  "attributes": {
+    "str": { "label": "力量", "desc": "近戰傷害與負重", "start": 5, "min": 1, "max": 20 },
+    "agi": { "label": "敏捷", "desc": "速度、命中與閃避", "start": 5, "min": 1, "max": 20 },
+    "con": { "label": "體質", "desc": "生命、體力與防禦", "start": 5, "min": 1, "max": 20 },
+    "per": { "label": "感知", "desc": "命中、爆擊與拾荒判定", "start": 5, "min": 1, "max": 20 },
+    "int": { "label": "智力", "desc": "合成與研究（v0.1 閒置，欄位保留）", "start": 5, "min": 1, "max": 20 }
+  },
+  "derived": {
+    "hpMax":     { "label": "生命上限", "base": 20, "per": { "con": 6 },            "round": "floor", "min": 1 },
+    "stMax":     { "label": "體力上限", "base": 10, "per": { "con": 2, "str": 1 },  "round": "floor", "min": 1 },
+    "atk":       { "label": "攻擊",     "base": 2,  "per": { "str": 2 },            "round": "floor", "min": 0 },
+    "def":       { "label": "防禦",     "base": 1,  "per": { "con": 1 },            "round": "floor", "min": 0 },
+    "spd":       { "label": "速度",     "base": 3,  "per": { "agi": 2 },            "round": "floor", "min": 0 },
+    "hit":       { "label": "命中",     "base": 60, "per": { "agi": 2, "per": 3 },  "round": "floor", "min": 0, "max": 100, "unit": "%" },
+    "eva":       { "label": "閃避",     "base": 5,  "per": { "agi": 3 },            "round": "floor", "min": 0, "max": 95, "unit": "%" },
+    "crit":      { "label": "爆擊率",   "base": 3,  "per": { "per": 2 },            "round": "floor", "min": 0, "max": 100, "unit": "%" },
+    "critMult":  { "label": "爆傷倍率", "base": 150, "per": { "str": 2 },           "round": "floor", "min": 100, "unit": "%" }
+  },
+  "_debuffApplies": [
+    "atk", "def", "spd", "hit", "eva", "crit"
+  ],
+  "_debuffNote": "飢渴 debuff 只削這幾項；hpMax/stMax/critMult 不受 debuff 百分比影響（hpMax 另有專屬的累積削減）。",
+  "initiative": {
+    "key": "spd",
+    "tiebreak": ["agi", "player"],
+    "_note": "先攻判定：SPD 高者先手；同值比 AGI；再同值玩家先手。"
+  }
+}
