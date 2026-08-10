@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a3630"/><stop offset="1" stop-color="#1a1c1e"/>
+    </linearGradient>
+    <linearGradient id="rust" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#e8a06a"/><stop offset="0.55" stop-color="#cf7a42"/><stop offset="1" stop-color="#9c5730"/>
+    </linearGradient>
+    <radialGradient id="haze" cx="0.5" cy="0.34" r="0.46">
+      <stop offset="0" stop-color="#cf7a42" stop-opacity="0.5"/><stop offset="1" stop-color="#cf7a42" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#sky)"/>
+  <circle cx="256" cy="196" r="180" fill="url(#haze)"/>
+  <circle cx="256" cy="188" r="74" fill="url(#rust)"/>
+  <!-- horizon dust band -->
+  <path d="M0 320 C 90 306, 150 330, 216 322 C 290 313, 340 334, 512 318 L512 512 L0 512 Z" fill="#12140f" opacity="0.55"/>
+  <!-- bunker silhouette -->
+  <path d="M104 356 L256 246 L408 356 L408 372 L372 372 L372 434 L140 434 L140 372 L104 372 Z" fill="#0e1012"/>
+  <path d="M140 372 L372 372 L372 434 L140 434 Z" fill="#191b1d"/>
+  <rect x="228" y="392" width="56" height="42" rx="4" fill="url(#rust)"/>
+  <!-- broken tower -->
+  <path d="M432 434 L432 300 L446 268 L460 300 L460 434 Z" fill="#0e1012"/>
+  <path d="M52 434 L52 344 L64 344 L64 434 Z" fill="#0e1012"/>
+</svg>

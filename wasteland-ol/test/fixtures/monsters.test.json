@@ -1,0 +1,20 @@
+{
+  "_note": "測試專用假怪物 —— 只給 test/run.js 跑戰鬥數學用，不是遊戲內容，絕不可搬進 assets/data/monsters.json。真正的怪物表由 Ting 提供。",
+  "schemaVersion": 1,
+  "monsters": [
+    {
+      "id": "test_dummy",
+      "name": "測試木樁",
+      "hp": 24, "atk": 1, "def": 0, "spd": 1, "hit": 100, "eva": 0,
+      "pattern": ["rest"],
+      "drops": [{ "itemId": "test_scrap", "min": 1, "max": 1, "chance": 100 }]
+    },
+    {
+      "id": "test_bruiser",
+      "name": "測試重擊者",
+      "hp": 999, "atk": 30, "def": 0, "spd": 1, "hit": 100, "eva": 0,
+      "pattern": ["attack", "guard"],
+      "drops": []
+    }
+  ]
+}
