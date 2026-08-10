@@ -33,7 +33,7 @@
 ```bash
 cd wasteland-ol
 for f in assets/js/*.js; do node --check "$f"; done   # 語法
-node test/run.js                                       # 回歸測試（79 條）
+node test/run.js                                       # 回歸測試（88 條）
 python3 bump.py show                                   # 版本
 python3 bump.py debug                                  # 進版並打包
 ```

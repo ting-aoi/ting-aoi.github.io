@@ -8,6 +8,14 @@ var WOL = window.WOL = window.WOL || {};
 
 WOL.cfgs = function () { return WOL.content.cfgs(); };
 
+// 時段一律以圖示呈現（不用「早／中／晚」國字）。label 降級為無障礙名稱掛在
+// title/aria-label 上，讀螢幕的人仍讀得到。圖示名由 rules.survival.json 決定。
+WOL.phaseMark = function (id, cfg) {
+  var label = WOL.time.phaseLabel(id, cfg);
+  return '<span class="phase-mark" title="' + WOL.escH(label) + '" aria-label="' + WOL.escH(label) + '">'
+    + WOL.icon(WOL.time.phaseIcon(id, cfg)) + '</span>';
+};
+
 function meter(kind, iconName, label, cur, max, low) {
   var pct = max > 0 ? Math.max(0, Math.min(100, Math.round(cur / max * 100))) : 0;
   return '<div class="meter meter-' + kind + (low ? ' meter-low' : '') + '">'
@@ -34,7 +42,7 @@ WOL.renderSidebar = function () {
   if (!el || !WOL.game) return;
   el.innerHTML = '<div style="color:rgba(232,224,209,0.85)">'
     + '<div class="readout" style="font-size:11px;letter-spacing:1px;color:rgba(232,224,209,0.45);margin-bottom:8px">'
-    + '第 ' + WOL.game.day + ' 天 · ' + WOL.escH(WOL.time.phaseLabel(WOL.game.phase, WOL.cfgs().survival))
+    + '第 ' + WOL.game.day + ' 天 · ' + WOL.phaseMark(WOL.game.phase, WOL.cfgs().survival)
     + ' · AP ' + WOL.game.ap + '</div>'
     + WOL.vitalsHtml(true) + '</div>';
   document.body.classList.toggle('in-combat', WOL.navLocked());
@@ -54,7 +62,7 @@ WOL.renderShelter = function () {
   WOL.$('clock').innerHTML =
       '<div class="clock-cell"><div class="clock-label">天數</div><div class="stat-num">' + g.day + '</div></div>'
     + '<div class="clock-cell"><div class="clock-label">時段</div><div class="stat-num">'
-        + WOL.escH(WOL.time.phaseLabel(g.phase, sur)) + '</div></div>'
+        + WOL.phaseMark(g.phase, sur) + '</div></div>'
     + '<div class="clock-cell"><div class="clock-label">行動點</div><div class="stat-num">' + g.ap + '</div>'
         + '<div class="ap-dots">' + dots + '</div></div>';
 
@@ -90,7 +98,8 @@ WOL.advanceTime = function () {
     if (r.thirst) WOL.state.pushLog(g, '喉嚨乾得發疼。', 'bad');
     if (r.hpMaxLossPct) WOL.state.pushLog(g, '長期匱乏讓體格衰退（生命上限 −' + r.hpMaxLossPct + '%）。', 'bad');
   } else {
-    WOL.state.pushLog(g, '時間推進到' + WOL.time.phaseLabel(g.phase, c.survival) + '。', '');
+    // 日誌是散文，塞圖示很怪；語句寫在 rules.survival.json 的 phases[].log
+    WOL.state.pushLog(g, WOL.time.phaseLog(g.phase, c.survival), '');
   }
   WOL.saveLocal(g);
   WOL.showSaved(true);
@@ -305,7 +314,7 @@ WOL.renderSave = function () {
   var g = WOL.game;
   WOL.$('save-info').innerHTML = '存檔格式 v' + WOL.state.SAVE_VERSION
     + ' · 儲存位置：本機瀏覽器（' + WOL.escH(WOL.LS_KEY) + '）<br>'
-    + '目前進度：第 ' + g.day + ' 天 · ' + WOL.escH(WOL.time.phaseLabel(g.phase, WOL.cfgs().survival));
+    + '目前進度：第 ' + g.day + ' 天 · ' + WOL.phaseMark(g.phase, WOL.cfgs().survival);
   var card = WOL.$opt('server-card');
   if (card) card.style.display = WOL.isStatic() ? 'none' : '';
 };

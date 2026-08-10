@@ -21,9 +21,22 @@
     return -1;
   };
 
+  // label 只作無障礙名稱用（title/aria-label），畫面上的時段一律走 phaseIcon
   T.phaseLabel = function (id, cfg) {
     var p = T.phaseAt(id, cfg);
     return p ? p.label : id;
+  };
+
+  // 圖示名（對應 index.html sprite 的 #i-<name>）；缺資料時退回時鐘圖示，不讓畫面開天窗
+  T.phaseIcon = function (id, cfg) {
+    var p = T.phaseAt(id, cfg);
+    return (p && p.icon) || 'clock';
+  };
+
+  // 推進到該時段時寫進事件日誌的句子（散文，不塞圖示）
+  T.phaseLog = function (id, cfg) {
+    var p = T.phaseAt(id, cfg);
+    return (p && p.log) || '';
   };
 
   T.apOf = function (id, cfg) {

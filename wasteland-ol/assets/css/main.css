@@ -158,6 +158,10 @@ body.night .btn-pri{color:#140d07}
 .clock{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
 .clock-cell{background:var(--card-grad);border:1px solid var(--border);border-radius:13px;padding:12px 10px;text-align:center;box-shadow:var(--card-shadow)}
 .clock-label{font-size:10.5px;letter-spacing:1.5px;color:var(--ink3);margin-bottom:4px}
+/* 時段圖示：svg.ic 尺寸吃 font-size，放進 26px 的 .stat-num 會自動放大 */
+.phase-mark{display:inline-flex;align-items:center;color:var(--rust)}
+.stat-num .phase-mark svg.ic{vertical-align:-0.06em}
+.readout .phase-mark svg.ic{vertical-align:-0.18em}
 .ap-dots{display:flex;gap:5px;justify-content:center;margin-top:6px}
 .ap-dot{width:9px;height:9px;border-radius:50%;background:var(--paper3);border:1px solid var(--border)}
 .ap-dot.on{background:var(--rust);border-color:transparent;box-shadow:0 0 8px var(--glow)}

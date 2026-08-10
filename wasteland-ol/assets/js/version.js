@@ -5,6 +5,6 @@
 (function (root) {
   'use strict';
   var WOL = root.WOL = root.WOL || {};
-  WOL.VERSION = 'v0.1';
-  WOL.BUILD = '1786359250';
+  WOL.VERSION = 'v0.1a';
+  WOL.BUILD = '1786401398';
 })(typeof window !== 'undefined' ? window : globalThis);

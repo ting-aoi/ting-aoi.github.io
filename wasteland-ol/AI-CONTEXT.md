@@ -1,6 +1,6 @@
 # AI-CONTEXT — 廢土 Online（wasteland-ol）
 
-> 交接文件 · 對應版本 **v0.1** · 供 AI 助手跨對話接手用。
+> 交接文件 · 對應版本 **v0.1a** · 供 AI 助手跨對話接手用。
 > 動工前先讀完本檔與 `CONVENTIONS.md`（鎖定決策在那邊）。
 
 ## 0. 一句話
@@ -70,7 +70,7 @@ wasteland-ol/
 ├─ bump.py           版本工具（見 CONVENTIONS §4）
 ├─ CHANGES.md        待寫入 changelog 的條目（bump 時消費並清空）
 ├─ AI-CONTEXT.md     本檔     CONVENTIONS.md  鎖定決策
-├─ test/             run.js（79 條斷言）＋ dom-stub.js ＋ fixtures/（測試專用假怪）
+├─ test/             run.js（88 條斷言）＋ dom-stub.js ＋ fixtures/（測試專用假怪）
 └─ assets/
    ├─ css/main.css   全部樣式，變數層日夜雙主題
    ├─ changelog.json 更新日誌資料（新→舊，bump 寫入）
@@ -108,6 +108,19 @@ wasteland-ol/
   不可改成「伺服器連不上」判斷，否則 shttps 暫時離線時備份鍵會憑空消失。
 - **探索行程**：`begin` 先付清整趟 AP，`step` 一次解一個事件；遭遇怪物會把 `st.trip`
   保留著切進戰鬥，戰鬥結束再回探索頁續走。敗北會清掉 `trip`。
+- **時段一律以圖示呈現**（v0.1a，Ting 指定）：畫面上不出現「早／中／晚」國字。
+  圖示名寫在 `rules.survival.json` 的 `phases[].icon`，由 `WOL.time.phaseIcon()` 取值、
+  `WOL.phaseMark()`（pages.js）包成帶 `title`／`aria-label` 的 span——`label` 降級為
+  無障礙名稱，讀螢幕的人仍讀得到。事件日誌走 `phases[].log` 的**自然語句**
+  （「天亮了。」而非「時間推進到早。」），因為日誌是散文，塞圖示很怪、也免得為此
+  在 `escH` 之外開 HTML 注入口。
+  ⚠️ **時段圖示是資料驅動的**，字串字面量掃不到——`test/run.js` 的孤兒圖示掃描
+  已把 `rules.survival.json` 的 icon 名納入 used 集合，改資料打錯字會轉紅。
+- **齒輪與更新日誌圖示**（v0.1a 重畫）：舊 `#i-gear` 是「圓圈＋八根放射直線」，
+  渲染出來是**太陽**不是齒輪；已改為 8 齒閉合輪廓（齒尖以二次貝茲圓角過渡，
+  頂點退 0.85 取控制點，與雙葉 v3.6b 同手法）。舊 `#i-scroll` 路徑自我交疊、
+  1em 下糊成一條，改成「文件＋摺角＋行」並正名為 `#i-log`。
+  **新圖示一律先在 16／24／40px 三尺寸目視過再進版**——1em 約 14–17px 才是實際使用尺寸。
 
 ## 6. 測試雷點（血淚）
 

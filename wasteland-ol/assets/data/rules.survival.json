@@ -1,10 +1,11 @@
 {
   "schemaVersion": 1,
   "_note": "時間與生存循環。AP 表、過夜結算、飢渴 debuff。v0.1 為提案值，待 Ting 確認。",
+  "_phaseNote": "label 不再當可見文字（畫面上時段一律用圖示），只留作 title／aria-label 的無障礙名稱；icon 對應 index.html sprite 的 #i-<name>，改名時測試的孤兒圖示掃描會把關；log 是推進到該時段時寫進事件日誌的句子。",
   "phases": [
-    { "id": "morning", "label": "早", "ap": 2 },
-    { "id": "noon",    "label": "中", "ap": 3 },
-    { "id": "night",   "label": "晚", "ap": 1 }
+    { "id": "morning", "label": "早", "icon": "sunrise", "log": "天亮了。",   "ap": 2 },
+    { "id": "noon",    "label": "中", "icon": "sun",     "log": "日正當中。", "ap": 3 },
+    { "id": "night",   "label": "晚", "icon": "moon",    "log": "入夜了。",   "ap": 1 }
   ],
   "start": {
     "day": 1,

@@ -66,12 +66,24 @@ chk('svg.ic 顏色吃 currentColor（雙主題免分版）', /svg\.ic\{[^}]*stro
 const symbols = [...new Set((html.match(/<symbol id="i-([\w-]+)"/g) || [])
   .map(s => s.match(/i-([\w-]+)/)[1]))];
 chk('SVG sprite 已注入', symbols.length >= 15);
-chk('無孤兒圖示引用（JS 與 HTML 用到的 #i- 都有定義）', (() => {
+chk('無孤兒圖示引用（HTML／JS／資料層用到的 #i- 都有定義）', (() => {
   const js = ['storage', 'ui', 'pages', 'app'].map(f => read(`assets/js/${f}.js`)).join('\n');
   const used = new Set();
   (html.match(/#i-([\w-]+)/g) || []).forEach(m => used.add(m.slice(3)));
   (js.match(/WOL\.icon\('([\w-]+)'/g) || []).forEach(m => used.add(m.match(/'([\w-]+)'/)[1]));
-  return [...used].every(u => symbols.includes(u));
+  // 時段圖示是資料驅動的，字串字面量掃不到——資料裡打錯名字必須也會被抓出來
+  (readJson('assets/data/rules.survival.json').phases || []).forEach(p => { if (p.icon) used.add(p.icon); });
+  return used.size >= 18 && [...used].every(u => symbols.includes(u));
+})());
+// 舊齒輪是「圓圈＋八根放射直線」，渲染出來是太陽不是齒輪（v0.1a 修）
+chk('齒輪是閉合的圓角輪廓，不是放射直線', (() => {
+  const g = (html.match(/<symbol id="i-gear"[\s\S]*?<\/symbol>/) || [''])[0];
+  const d = (g.match(/<path d="([^"]+)"/) || ['', ''])[1];
+  return /Q/.test(d) && /Z\s*$/.test(d) && d.length > 400 && g.includes('<circle');
+})());
+chk('時段三顆圖示齊備且互不共用（日出／太陽／月亮）', (() => {
+  const icons = (readJson('assets/data/rules.survival.json').phases || []).map(p => p.icon);
+  return icons.length === 3 && new Set(icons).size === 3 && icons.every(i => symbols.includes(i));
 })());
 
 // ════════ B. 核心規則（零 DOM）════════
@@ -178,6 +190,11 @@ chk('先攻：SPD 高者先手，同值比 AGI，再同值玩家先',
 
 // 1 AP = 2 次行動，零頭無條件進位
 chk('AP 換算零頭無條件進位', [1, 2, 3, 4, 5].map(W.explore.apCost).join(',') === '1,1,2,2,3');
+
+chk('phaseIcon / phaseLog 三個時段都有值', ['morning', 'noon', 'night'].every(id =>
+  W.time.phaseIcon(id, files.survival) && W.time.phaseLog(id, files.survival)));
+chk('phaseIcon 資料缺漏時退回 clock，不讓畫面開天窗',
+  W.time.phaseIcon('nope', files.survival) === 'clock' && W.time.phaseLog('nope', files.survival) === '');
 
 chk('撤退率 = 50 + 速度差×3，夾在 20–90',
   W.combat.retreatChance(10, 10, files.combat) === 50
@@ -401,6 +418,37 @@ chk('內容表為空時探索頁走「未載入」分支而非空白', (() => {
 chk('內容表為空時避難所顯示提示', (() => {
   W.showPage('shelter');
   return document.getElementById('content-warning').innerHTML.includes('內容資料未載入');
+})());
+
+// v0.1a：時段一律用圖示，畫面上不得出現早／中／晚國字
+const PHASE_HANZI = /[早中晚]/;
+chk('儀表板時段格是圖示、不是國字', (() => {
+  W.game = fresh();
+  W.showPage('shelter');
+  const cell = document.getElementById('clock').innerHTML;
+  const seg = cell.slice(cell.indexOf('時段'), cell.indexOf('行動點'));
+  return seg.includes('<use href="#i-sunrise"') && !PHASE_HANZI.test(seg.replace(/title="[^"]*"|aria-label="[^"]*"/g, ''));
+})());
+chk('時段圖示仍保留無障礙名稱', (() => {
+  const cell = document.getElementById('clock').innerHTML;
+  return /aria-label="早"/.test(cell) && /title="早"/.test(cell);
+})());
+chk('側欄日期列的時段也是圖示', (() => {
+  W.renderSidebar();
+  const sb = document.getElementById('sb-vitals').innerHTML;
+  return sb.includes('<use href="#i-sunrise"');
+})());
+// 日誌是散文，走 phases[].log 的自然語句，不再是「時間推進到中。」這種讀不通的拼接
+chk('推進時間寫進日誌的是資料層的自然語句', (() => {
+  W.game = fresh();
+  W.advanceTime();
+  const line = W.game.log[0].t;
+  return line === W.time.phaseLog('noon', files.survival)
+    && line.length > 3 && !line.includes('時間推進到');
+})());
+chk('三個時段的日誌語句各不相同', (() => {
+  const logs = ['morning', 'noon', 'night'].map(id => W.time.phaseLog(id, files.survival));
+  return new Set(logs).size === 3;
 })());
 
 chk('背包為空時顯示空狀態而非壞掉', (() => {
