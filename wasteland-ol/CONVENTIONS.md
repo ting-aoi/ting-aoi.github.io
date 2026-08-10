@@ -8,6 +8,7 @@
 | 項目 | 值 |
 |---|---|
 | 專案資料夾 | `wasteland-ol/`（GitHub Pages repo 的子資料夾，與 `futaba-bookshelf/` 平行） |
+| 開發分支 | `wasteland-ol`（從 main 長出；雙葉走 `futaba-bookshelf`，不歸這裡碰） |
 | 成品 zip | `wasteland-ol-vX.X.zip` |
 | zip 內部頂層資料夾 | 固定 `wasteland-ol/` |
 | 全域命名空間 | `WOL`（`assets/js/version.js` 內 `WOL.VERSION`、`WOL.BUILD`） |
@@ -81,7 +82,11 @@ python3 ~/.claude/skills/ting-projects/scripts/verify_zip.py wasteland wasteland
 
 ## 5. 部署（雙管道）
 
-1. **GitHub Pages**：commit → push `main` → 自動更新（zip 被 `.gitignore` 排除不入庫）。
+1. **GitHub Pages**：推 `wasteland-ol` 分支 → 開草稿 PR → **由 Ting 親自合併進 `main`**
+   才會更新線上版。**AI 不得直推 main、不得自行按合併**（Ting 2026-08 定案）。
+   分支樹裡的 `futaba-bookshelf/` 一行都不要動——刪掉它，合併後雙葉會從線上站台消失。
+   完整規則見 repo 根目錄 `BRANCHES.md`，推送前必驗見 `AI-CONTEXT.md` §4。
+   （zip 被 `.gitignore` 排除不入庫。）
 2. **shttps**：解壓 zip 覆蓋部署目錄 → 開頁面走一次 `/#update`。
 
 存檔存在使用者瀏覽器；shttps 只是手動備份的去處（`<base>/save/save.json`），

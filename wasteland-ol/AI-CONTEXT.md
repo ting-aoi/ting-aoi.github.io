@@ -9,7 +9,7 @@
 localStorage 存檔 ＋ shttps 手動備份，底層與雙葉書庫同一套（靜態 HTML PWA），
 使用者 Ting，全程繁體中文。
 
-## 1. 目前狀態（v0.1）
+## 1. 目前狀態（v0.1b）
 
 **引擎與介面全部到位，內容表是空的。** 五個系統可跑：
 
@@ -59,7 +59,36 @@ v0.1 的規則係數是我提的初版，全部集中在三個 JSON，改平衡�
 
 實測：全屬性 5 的角色餓＋渴滿檔時，ATK 12 → 4、生命上限 50 → 20。**偏嚴苛，等 Ting 定奪。**
 
-## 4. 檔案結構
+## 4. 分支與部署（‼️ 動 git 之前先讀完，完整版見 repo 根目錄 `BRANCHES.md`）
+
+repo 是**一站多專案**，一個專案一條分支，都回 main：
+
+```
+futaba-bookshelf ─┐
+                  ├─ PR ─→ main ─→ GitHub Pages
+wasteland-ol ─────┘
+```
+
+- 本專案的分支是 **`wasteland-ol`**，從 main 正常長出來。雙葉那條是 `futaba-bookshelf`，不歸這裡碰。
+- GitHub Pages **只從 `main` 部署**，`futaba-bookshelf/` 與 `wasteland-ol/` 兩個資料夾必須同時
+  存在於 main——main 是整合分支＝部署分支，**不是被污染**。
+- **`main` 只接受合併，不直接提交；合併一律走 PR 且由 Ting 親自按。**
+  AI 只負責推分支＋開草稿 PR，不得自行合併、不得直推 main。
+
+### ⚠️ 分支樹裡看得到 `futaba-bookshelf/`，一行都不要動
+
+分支是整棵樹的快照、不是資料夾，所以本分支的檔案樹必然包含雙葉的資料夾——這是正常的。
+**絕對不要為了「讓分支只剩廢土」而刪掉它**：merge 是套用差異，分支裡的「刪除」會原封
+套到 main，合併之後雙葉書庫就會從線上站台消失。
+
+真正重要的是**差異**。推送前必驗：
+
+```bash
+git diff --name-only origin/main...HEAD | cut -d/ -f1 | sort -u     # 只能有 wasteland-ol
+git diff --name-only origin/main...HEAD -- futaba-bookshelf | wc -l # 必須是 0
+```
+
+## 5. 檔案結構
 
 ```
 wasteland-ol/
@@ -92,7 +121,7 @@ wasteland-ol/
       app.js      開機序、事件接線、返回鍵、手勢
 ```
 
-## 5. 關鍵設計要點
+## 6. 關鍵設計要點
 
 - **衍生數值一律走 `WOL.state.derived(st, cfgs)`**，不得在 UI 層自算。
   `rules.derive` 讀 `_debuffApplies` 決定哪些項目吃 debuff；`hpMax` **不吃屬性百分比**，
@@ -122,7 +151,7 @@ wasteland-ol/
   1em 下糊成一條，改成「文件＋摺角＋行」並正名為 `#i-log`。
   **新圖示一律先在 16／24／40px 三尺寸目視過再進版**——1em 約 14–17px 才是實際使用尺寸。
 
-## 6. 測試雷點（血淚）
+## 7. 測試雷點（血淚）
 
 - 共用的 `test/dom-stub.js` 的 `classList.toggle` **不吃第二個 force 參數**，
   `run.js` 在測試端補了一層 force 支援。**不要去改樁本身**。
@@ -131,7 +160,7 @@ wasteland-ol/
   所以 `'serviceWorker' in navigator` 會過而取用會炸——程式碼一律改判 `navigator.serviceWorker`。
 - 戰鬥測試用固定 rng（`() => 0` 必中、`() => 0.999` 必失敗）取代亂數，不得靠機率碰運氣。
 
-## 7. 路線圖
+## 8. 路線圖
 
 - **下一步（等資料）**：Ting 給四張內容表 → 補進 `assets/data/` → 實測平衡 → v0.2
 - **等資料到位後才有意義**：怪物 SVG 剪影（規範在 CONVENTIONS §3）、道具使用效果、
