@@ -79,6 +79,10 @@ wasteland-ol ─────┘
   雙葉書庫仍然要 Ting 親手按，不要弄混，也不要去改雙葉的規則。
 - 自動合併不等於可以少驗：**推之前照樣要跑完 `node test/run.js` 與下面兩道差異檢查**。
   以前有 Ting 把關 diff，現在沒有了，出錯會直接上線。
+- **tag 推不上去，這是已知的權限邊界，不要再試**：`git push origin <tag>` 一律 403
+  （`refs/heads/*` 可寫、`refs/tags/*` 不可寫），MCP 的 GitHub 工具也只有唯讀的
+  `get_tag`／`list_tags`。穩定版照樣打本機 annotated tag，然後把
+  **tag 名＋完整 40 碼 SHA** 交給 Ting，由他推。慣例格式見 `CONVENTIONS.md` §0。
 
 ### ⚠️ 分支樹裡看得到 `futaba-bookshelf/`，一行都不要動
 

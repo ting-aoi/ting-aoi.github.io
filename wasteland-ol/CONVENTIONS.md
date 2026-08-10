@@ -14,6 +14,7 @@
 | 全域命名空間 | `WOL`（`assets/js/version.js` 內 `WOL.VERSION`、`WOL.BUILD`） |
 | localStorage 存檔鍵 | `wol_save_v1` |
 | 版本錨點 | `index.html` 狀態列的 `>vX.X<` |
+| 版本 tag | `wasteland-vX.Yz`（annotated，指向該版本的 commit，穩定版才打） |
 | 線上位置 | `https://ting-aoi.github.io/wasteland-ol/` |
 
 ## 1. 鐵律（違反＝事故）
@@ -33,6 +34,9 @@
 7. **存檔帶 `saveVersion`，不相容即丟棄**，不寫遷移程式。
 8. **localStorage 鍵一律帶 `wol_` 前綴**：與雙葉書庫同 origin 共存，沒前綴會互相污染。
 9. **確認後執行**：重大設計先提案、Ting 核可才動工。
+10. **跨界問題要提出、不要自己動手**（Ting 2026-08-10 確認）：發現別的專案或共用檔案
+    （如根目錄 `BRANCHES.md`）有錯誤或不一致時，**回報給 Ting 讓他決定**，
+    既不默默略過、也不自行修改。有跨界需求時 Ting 會明確授權。
 
 ## 2. 設計系統
 
@@ -79,6 +83,11 @@ python3 ~/.claude/skills/ting-projects/scripts/verify_zip.py wasteland wasteland
 - 臨時 smoke test 檔**打包前必須刪除**（`test_*.js`、`*_test.js` 已列入打包排除，但仍別留）。
 - 版本號：小修字母遞增（v0.1 → v0.1a）；功能版次版號遞增（v0.1 → v0.2）；
   大版本 `major` 需 Ting 確認。
+- **穩定版打 tag**：`git tag -a wasteland-vX.Yz <該版本的 commit> -m "…"`。
+  ⚠️ **AI 工作階段推不上去**：`git push origin <tag>` 會被 GitHub 憑證層擋下（403，
+  `refs/heads/*` 可寫、`refs/tags/*` 不可寫；egress proxy 的 `recentRelayFailures` 是空的，
+  證明不是網路政策）。MCP 的 GitHub 工具也只有唯讀的 `get_tag`／`list_tags`。
+  **別再重試或想繞路——打好本機 tag，把 tag 名與完整 SHA 交給 Ting 推。**
 
 ## 5. 部署（雙管道）
 
