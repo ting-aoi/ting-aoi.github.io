@@ -58,7 +58,13 @@ booknotes-pwa/
    - 自動：改 index.html 版號、sw.js `BUILD='<秒>'`、8 處 `?v=BUILD`、changelog.json、打包
    - zip 檔名含版本（futaba-pwa-v3.1c.zip）、內部資料夾固定 `booknotes-pwa/`、排除 .zip 與 data/index.json、data/settings.json
 6. 刪 outputs 舊 zip → cp 新 zip → present_files
-- 部署方式（v3.3 起雙管道）：①shttps：Ting 解壓覆蓋 shttps 目錄 → 頁面 `/#update` 一次；②GitHub：repo 位於 ting-aoi/ting-aoi.github.io 的 `futaba-bookshelf/` 子資料夾，commit → push `main` → GitHub Pages 自動更新（zip 被 .gitignore 排除不入庫）。
+- 部署方式（v3.3 起雙管道）：①shttps：Ting 解壓覆蓋 shttps 目錄 → 頁面 `/#update` 一次；②GitHub：repo 位於 ting-aoi/ting-aoi.github.io 的 `futaba-bookshelf/` 子資料夾（zip 被 .gitignore 排除不入庫）。
+- **分支策略（Ting 2026-08 定案，勿再直推 main）**：repo 一站多專案——`futaba-bookshelf/`（本專案）與 `wasteland-ol/`（廢土 Online）路徑互不重疊，故各自開分支、合併永不衝突。
+  - 雙葉書庫一律開發於分支 **`futaba-bookshelf`**；廢土走它自己的分支。
+  - **`main` 是整合分支**，只接受各分支合併，不直接提交。
+  - **雙葉每次進版後自動合併進 main**（Ting 2026-08 指示）：在 `futaba-bookshelf` 提交並推送後，隨即 `git merge --no-ff futaba-bookshelf` 進 main 並推送，不必等 Ting 審。合併用 `--no-ff` 保留整合點，讓 main 的歷史讀起來是一連串「整合了哪個分支」。
+  - **本專案工作階段的權限邊界**：只能動 `futaba-bookshelf` 分支，以及把它合進 `main`。**不得改動 main 上的其他內容，不得碰廢土（`wasteland-ol/`）的分支或檔案。**
+  - GitHub Pages 從 `main` 部署，所以合併後線上版即更新。
 
 ### 測試雷點（血淚）
 - Node 22 `navigator` 唯讀：mock 要 `Object.defineProperty(globalThis,'navigator',...)`
