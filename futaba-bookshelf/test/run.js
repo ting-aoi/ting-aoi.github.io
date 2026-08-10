@@ -63,7 +63,13 @@ chk('v3.1：home-sec flex 且底線滿寬', /\.home-sec\{[^}]*display:flex/.test
 chk('v3.1：角色列基線對齊', /\.char-item\{[^}]*align-items:baseline/.test(css));
 chk('v3.0c：磚牆副標單行省略（磚等大）', /\.app-tile-sub\{[^}]*text-overflow:ellipsis/.test(css));
 chk('v3.0d：排序模式抑制選取與長按', /\.apps-grid\.sorting\{[^}]*user-select:none/.test(css) && css.includes('-webkit-touch-callout:none'));
-chk('v3.1b：書庫篩選列 2 欄（至多兩行）', /\.lib-controls\{display:grid;grid-template-columns:repeat\(2,1fr\)/.test(css));
+chk('v3.1b：書庫篩選列 2 欄', /\.lib-controls\{display:grid;grid-template-columns:repeat\(2,1fr\)/.test(css));
+chk('v3.7：第 5 個下拉獨佔末行滿寬', css.includes('.lib-controls .lib-select:nth-child(5){grid-column:span 2}'));
+chk('v3.7：狀態排序死路徑零殘留', (() => {
+  // 只看實際程式碼——註解裡記錄根因時會提到該鍵名，不算殘留
+  const code = read('assets/js/ui.js').split('\n').filter(l => !l.trim().startsWith('//')).join('\n');
+  return !html.includes('value="status"') && !code.includes('statusOptions');
+})());
 chk('v3.1a：側欄無書名 A→Z 排序', !html.includes('title-asc') && !html.includes('title-desc'));
 chk('v3.0b：字體 preconnect', html.includes('fonts.googleapis.com') && html.includes('crossorigin'));
 chk('v3.0b：設定三分頁 11 區標記', (html.match(/data-tab="/g) || []).length === 11);
@@ -92,10 +98,12 @@ require(path.join(ROOT, 'assets/js/search.js'));
 require(path.join(ROOT, 'assets/js/ui.js'));
 require(path.join(ROOT, 'assets/js/pages.js'));
 const FT = global.FT;
+const realRenderStatusFilter = FT.renderStatusFilter;   // 替身蓋掉前先留一份（C5b 要驗）
 
 // 測試替身
 ['renderHome','renderTrash','renderSettings','renderStats','renderChangelog',
  'renderAuthors','renderStatusFilter','renderTagsRow','loadForm','applyReadMode',
+ // 註：renderStatusFilter 被替身蓋掉，C5b 要驗它得用下方保留的 realRenderStatusFilter
  'renderCharacters','flushCharInputs','saveCurrentBook','renderSearchOverlay'].forEach(f => { FT[f] = () => {}; });
 FT.debSave = () => {}; FT.saveAll = () => {};
 FT.settings.myProgressOptions = ['書單','閱讀中','棄坑','閱讀完'];
@@ -142,7 +150,7 @@ const card = t => libHtml().indexOf('>' + t + '</div>');
 FT._lib = { prog:'', sort:'date-desc', rating:'', comp:'' };
 FT.renderLibrary();
 chk('書庫列出全部', libHtml().includes('3 本'));
-chk('書庫四顆下拉', (libHtml().match(/class="lib-select"/g) || []).length === 4);
+chk('v3.7：書庫五顆下拉（＋作品狀態）', (libHtml().match(/class="lib-select"/g) || []).length === 5);
 chk('最新優先', card('完整書') < card('空殼書'));
 FT.libSet('sort','rating-asc');
 chk('評分低→高', card('空殼書') < card('完整書'));
@@ -154,6 +162,40 @@ FT.libSet('comp',''); FT.libSet('prog','閱讀中');
 chk('進度篩選', libHtml().includes('1 本') && card('待補書') >= 0);
 chk('下拉選中態保留', /value="閱讀中" selected/.test(libHtml()));
 FT.libSet('prog','');
+
+// C5b 作品狀態：書庫篩選＋側欄分組下拉（v3.7）
+FT.settings.workStatusOptions = ['連載中','已完結','斷更'];
+FT.books.b1.workStatus = '連載中';
+FT.books.b2.workStatus = '已完結';
+FT.libSet('work','連載中');
+chk('v3.7：書庫作品狀態篩選', libHtml().includes('1 本') && card('完整書') >= 0);
+FT.libSet('work','');
+realRenderStatusFilter();
+chk('v3.7：側欄下拉分兩組（我的進度／作品狀態）',
+  (env.html('filter-status').match(/<optgroup/g) || []).length === 2
+  && env.html('filter-status').includes('value="work:連載中"'));
+window._filterStatus = 'work:已完結'; FT.renderList();
+chk('v3.7：側欄依 work 前綴只篩作品狀態',
+  env.html('book-list').includes('待補書') && !env.html('book-list').includes('完整書'));
+window._filterStatus = '閱讀中'; FT.renderList();   // 無前綴舊值 → 當 prog
+chk('v3.7：無前綴舊值仍當我的進度處理', env.html('book-list').includes('待補書'));
+window._filterStatus = '';
+
+// C5c 完成度單一事實來源（v3.7）：missingFields 與 completionLevel 不得分家
+chk('v3.7：missingFields 與 completionLevel 同源', (() => {
+  const lv = b => FT.completionLevel(b), mf = b => FT.missingFields(b);
+  return mf(FT.books.b1).hard.length === 0 && mf(FT.books.b1).soft.length === 0 && lv(FT.books.b1) === 'ok'
+      && mf(FT.books.b2).hard.length === 0 && mf(FT.books.b2).soft.length > 0  && lv(FT.books.b2) === 'yellow'
+      && mf(FT.books.b3).hard.length > 0                                       && lv(FT.books.b3) === 'red';
+})());
+chk('v3.7：缺漏明細指得出實際欄位', (() => {
+  const h = FT.missingFields(FT.books.b3).hard;
+  return h.includes('作者') && h.includes('標籤') && h.includes('重要角色');
+})());
+chk('v3.7：明細標籤清單涵蓋所有可能缺項', (() => {
+  const all = [...FT.missingFields(FT.books.b3).hard, ...FT.missingFields(FT.books.b3).soft];
+  return all.every(f => FT.MISSING_LABELS.includes(f));
+})());
 
 // C6 功能磚與排序（v3.0c/v3.0d）
 env.el('stat-ver').textContent = 'test';
@@ -250,6 +292,15 @@ chk('拖曳中斷保險齊備', (() => {
   chk('v3.3：#標籤 與 ~ 混用', m('#系統流 ~燈塔') && !m('#不存在 ~燈塔'));
   chk('v3.3：簡體 ~ 查詢命中繁體內文', m('~灯塔') && m('~动人'));
   chk('v3.3：@人名 簡繁正規化', m('@叶修'));
+  // v3.7 :狀態 前綴
+  const bs = { ...bk, workStatus:'連載中', audioStatus:'製作中', myProgress:'閱讀中' };
+  const ms = q => FT.bookMatchesSearch(bs, FT.parseSearch(q));
+  chk('v3.7：: 命中作品狀態與聽書狀態', ms(':連載中') && ms(':製作中'));
+  chk('v3.7：: 也涵蓋我的進度', ms(':閱讀中'));
+  chk('v3.7：: 不誤命中書名內文', !ms(':孤帆') && !ms(':燈塔'));
+  chk('v3.7：多個 : 詞為 AND', ms(':連載中 :製作中') && !ms(':連載中 :已完結'));
+  chk('v3.7：: 與其他前綴混用', ms('#系統流 :連載中 ~燈塔'));
+  chk('v3.7：: 簡體查詢命中繁體狀態', ms(':连载中'));
   chk('v3.3：長內文不被 64 變體上限截斷', (() => {
     // 故障注入等價驗證：needle 藏在超長 haystack 尾端——若 haystack 走了變體展開，
     // 64 上限會把它截成前綴，此斷言必失敗

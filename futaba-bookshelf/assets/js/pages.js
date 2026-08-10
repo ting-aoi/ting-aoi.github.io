@@ -248,8 +248,8 @@ FT.toggleAppsSort = function() {
   FT.toggleAppsSort = function() { cleanup(false); _origToggle(); };
 })();
 
-// ── 書庫頁 (v3.1a)：整版書單——三下拉(排序/評分/完成度) + 進度膠囊 ──
-FT._lib = { prog:'', sort:'date-desc', rating:'', comp:'' };   // 頁內篩選狀態
+// ── 書庫頁 (v3.1a)：整版書單——五下拉(排序/進度/評分/完成度/作品狀態) ──
+FT._lib = { prog:'', sort:'date-desc', rating:'', comp:'', work:'' };   // 頁內篩選狀態
 
 FT._libSorters = {
   'date-desc':   (a,b) => b.created - a.created,
@@ -269,10 +269,13 @@ FT.renderLibrary = function() {
   }
   const L = FT._lib;
   const progOpts = FT.settings.myProgressOptions || [];
+  const workOpts = FT.settings.workStatusOptions || [];
   if (L.prog && !progOpts.includes(L.prog)) L.prog = '';
+  if (L.work && !workOpts.includes(L.work)) L.work = '';
 
   let list = all.filter(b => {
     if (L.prog && b.myProgress !== L.prog) return false;
+    if (L.work && b.workStatus !== L.work) return false;
     if (L.rating === 'unrated') { if (b.rating) return false; }
     else if (L.rating && (b.rating|0) !== +L.rating) return false;
     if (L.comp && FT.completionLevel(b) !== L.comp) return false;
@@ -290,7 +293,8 @@ FT.renderLibrary = function() {
     +   sel('sort', [['date-desc','最新優先'],['date-asc','最舊優先'],['rating-desc','評分高→低'],['rating-asc','評分低→高']], L.sort)
     +   sel('prog', [['','全部進度']].concat(progOpts.map(p => [p, p])), L.prog)
     +   sel('rating', [['','全部評分'],['5','★★★★★'],['4','★★★★'],['3','★★★'],['2','★★'],['1','★'],['unrated','未評分']], L.rating)
-    +   sel('comp', [['','全部狀態'],['ok','✓ 完成'],['yellow','◇ 待補'],['red','◆ 缺漏']], L.comp)
+    +   sel('comp', [['','全部完成度'],['ok','✓ 完成'],['yellow','◇ 待補'],['red','◆ 缺漏']], L.comp)
+    +   sel('work', [['','全部作品狀態']].concat(workOpts.map(w => [w, w])), L.work)
     + '</div>'
     + `<div class="lib-count">${list.length} 本</div>`
     + list.map(b => {
@@ -381,7 +385,23 @@ FT.renderStats = function() {
       + rows.map(([name,c]) => bar(escH(name), c, mx, 'green')).join('');
   };
 
-  // ── 四、Tag（TOP 20，點擊直接篩選）──
+  // ── 四、完成度（v3.7）：三態計數 + 「還缺什麼」明細，與 FT.missingFields 同源 ──
+  const compCount = { ok:0, yellow:0, red:0 };
+  const missCount = {};
+  all.forEach(b => {
+    compCount[FT.completionLevel(b)]++;
+    const m = FT.missingFields(b);
+    [...m.hard, ...m.soft].forEach(f => { missCount[f] = (missCount[f]||0) + 1; });
+  });
+  const compMax  = Math.max(compCount.ok, compCount.yellow, compCount.red, 1);
+  const compRows = bar('✓ 完成', compCount.ok, compMax, 'green')
+                 + bar('◇ 待補', compCount.yellow, compMax, 'gold')
+                 + bar('◆ 缺漏', compCount.red, compMax, 'tag');
+  // 明細依 MISSING_LABELS 固定順序（與表單欄位順序一致），只列真的有缺的
+  const missRows = FT.MISSING_LABELS.filter(f => missCount[f])
+                     .map(f => bar(escH(f), missCount[f], all.length || 1, 'tag')).join('');
+
+  // ── 五、Tag（TOP 20，點擊直接篩選）──
   const tagCount = {};
   all.forEach(b => (b.tags||[]).filter(t => t != null).forEach(id => { tagCount[id] = (tagCount[id]||0)+1; }));
   const topTags = Object.entries(tagCount).sort((a,b) => b[1]-a[1]).slice(0, 20);
@@ -399,9 +419,16 @@ FT.renderStats = function() {
     +   `<div class="stats-grid">${overview}</div></div>`
     + `<div class="stats-sec"><div class="stats-sec-title"><span class="gilt-star">★</span> 評分分佈</div>`
     +   `<div class="stats-caption">已評分 ${ratedN} 本 · 平均 ${ratedAvg}★</div>${ratingRows}</div>`
+    + `<div class="stats-sec"><div class="stats-sec-title">${FT.icon('refresh')} 連載狀態</div>`
+    +   platBlock('作品狀態', 'workStatus')
+    +   platBlock('聽書狀態', 'audioStatus') + `</div>`
     + `<div class="stats-sec"><div class="stats-sec-title">${FT.icon('device')} 平台</div>`
     +   platBlock('小說平台', 'textPlatform')
     +   platBlock('有聲平台', 'audioPlatform') + `</div>`
+    + `<div class="stats-sec"><div class="stats-sec-title">${FT.icon('check')} 完成度</div>`
+    +   compRows
+    +   (missRows ? `<div class="stats-sub">還缺什麼</div>${missRows}` : '<div class="stats-caption">全部書評都填滿了。</div>')
+    +   `</div>`
     + `<div class="stats-sec"><div class="stats-sec-title">${FT.icon('tag')} 熱門標籤 TOP 20</div>`
     +   `<div class="stats-caption">點一下直接搜尋該標籤。</div>${tagRows}</div>`;
 };

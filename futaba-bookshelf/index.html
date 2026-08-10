@@ -31,7 +31,7 @@
 <title>雙葉書庫</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="assets/css/main.css?v=1786284425">
+<link rel="stylesheet" href="assets/css/main.css?v=1786337942">
 </head>
 <body>
 
@@ -79,7 +79,7 @@
   <button class="logo" id="logo-home-btn">雙葉<span>書庫</span></button>
   <div class="header-search">
     <span style="color:rgba(255,255,255,0.25);font-size:12px"><svg class="ic"><use href="#i-search"/></svg></span>
-    <input type="text" id="search" placeholder="書名 / 作者 / #標籤 / @人名 / ~內文…" autocomplete="off"><button id="search-clear" style="display:none" aria-label="清除搜尋">✕</button>
+    <input type="text" id="search" placeholder="書名 / #標籤 / @人名 / ~內文 / :狀態…" autocomplete="off"><button id="search-clear" style="display:none" aria-label="清除搜尋">✕</button>
   </div>
   <button class="hbtn nav-only" id="home-btn" title="主頁"><svg class="ic"><use href="#i-home"/></svg></button>
   <button class="hbtn nav-only" id="trash-btn" title="回收桶"><svg class="ic"><use href="#i-trash"/></svg></button>
@@ -95,13 +95,12 @@
     <div class="sb-top"><button class="new-btn" id="new-btn">＋ 新增書評</button></div>
     <div id="completion-bar" style="display:none"></div>
     <div class="sb-controls">
-      <select id="filter-status"><option value="">── 全部狀態 ──</option></select>
+      <select id="filter-status"><option value="">── 全部 ──</option></select>
       <select id="sort-select" style="max-width:110px">
         <option value="date-desc">最新優先</option>
         <option value="date-asc">最舊優先</option>
         <option value="rating-desc">評分高→低</option>
         <option value="rating-asc">評分低→高</option>
-        <option value="status">狀態排序</option>
       </select>
     </div>
     <div class="sb-section-label">書庫</div>
@@ -463,6 +462,19 @@
             </div>
           </div>
 
+          <div class="io-card" style="margin-bottom:14px">
+            <div class="io-card-head">
+              <span class="io-ico"><svg class="ic"><use href="#i-note"/></svg></span>
+              <div class="io-card-text">
+                <div class="io-card-title">Markdown</div>
+                <div class="io-card-desc">每則書評一份 .md，可讀可搬（唯讀匯出）</div>
+              </div>
+            </div>
+            <div class="io-actions">
+              <button class="io-act io-act-pri" style="width:100%" onclick="FT.exportMarkdown()">↑&ensp;匯出 ZIP</button>
+            </div>
+          </div>
+
           <div class="io-card">
             <div class="io-card-head">
               <span class="io-ico"><svg class="ic"><use href="#i-gear"/></svg></span>
@@ -518,7 +530,7 @@
 </div>
 
 <div id="statusbar">
-  <span id="stat-note">雙葉書庫</span> <span id="stat-ver">v3.6d</span>
+  <span id="stat-note">雙葉書庫</span> <span id="stat-ver">v3.7</span>
   <span id="stat-count" style="margin-left:auto"></span>
   <span id="stat-save">✓ 已儲存</span>
 </div>
@@ -567,13 +579,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
 <!-- Futaba modules -->
-<script src="assets/js/storage.js?v=1786284425"></script>
-<script src="assets/js/search.js?v=1786284425"></script>
-<script src="assets/js/ui.js?v=1786284425"></script>
-<script src="assets/js/pages.js?v=1786284425"></script>
-<script src="assets/js/editor.js?v=1786284425"></script>
-<script src="assets/js/settings.js?v=1786284425"></script>
-<script src="assets/js/app.js?v=1786284425"></script>
+<script src="assets/js/storage.js?v=1786337942"></script>
+<script src="assets/js/search.js?v=1786337942"></script>
+<script src="assets/js/ui.js?v=1786337942"></script>
+<script src="assets/js/pages.js?v=1786337942"></script>
+<script src="assets/js/editor.js?v=1786337942"></script>
+<script src="assets/js/settings.js?v=1786337942"></script>
+<script src="assets/js/app.js?v=1786337942"></script>
 
 </body>
 </html>

@@ -1,5 +1,5 @@
 # AI-CONTEXT — 雙葉書庫（Futaba）
-> 交接文件 · 對應版本 **v3.6** · 供 AI 助手跨對話接手用。動工前先讀完本檔。
+> 交接文件 · 對應版本 **v3.7** · 供 AI 助手跨對話接手用。動工前先讀完本檔。
 
 ## 0. 一句話
 個人書評 PWA：vanilla JS、全域 `FT` 命名空間、shttps 本地檔案伺服器（localhost:8080）做資料持久化，Android + Brave 為主要環境，使用者 Ting，全程繁體中文。
@@ -38,7 +38,7 @@ booknotes-pwa/
 
 ## 3. 資料模型要點
 - `FT.books[id]`：title/author/rating(0-5)/myProgress/textPlatform/audioPlatform/cvType/aiCv/cvChange/voiceExp/characters[]/tags[](id 引用 tagDict)/synopsis/review/notes/created。
-- `FT.completionLevel(b)` → `'red'`(◆缺漏)/`'yellow'`(◇待補)/`'ok'`：hard 欄位（作者/進度/平台/角色/標籤/有聲四欄——audioPlatform='無' 時免）缺任一=red；synopsis 或 review 缺=yellow。
+- `FT.missingFields(b)` → `{hard:[], soft:[]}` 是完成度的**單一事實來源**（v3.7）：hard=書名/作者/進度/雙平台/角色/標籤/有聲四欄（audioPlatform='無' 時免），soft=簡介/心得；`FT.MISSING_LABELS` 為固定顯示順序。`FT.completionLevel(b)` 只是它的薄包裝 → `'red'`(◆缺漏，hard 缺任一)/`'yellow'`(◇待補，僅 soft 缺)/`'ok'`。**新增完成度相關功能一律走 missingFields，不得另寫一套判定**（統計頁「還缺什麼」即靠此同源，test/run.js 有斷言把關）。
 - `FT.settings` 整包序列化寫 `data/settings.json`。特殊鍵：
   - `appsOrder`：功能磚順序（拖排持久化）
   - `settingsSecOpen`：設定頁「預設展開」的**區名清單**（出廠 `['系統更新','外觀','新書預設值']`；區名=標題去表情與空白，如 `換CV選項`；無 UI，手動改 JSON）
@@ -82,22 +82,24 @@ booknotes-pwa/
 | home | 手寫大標、統計卡（Caveat 數字+夜燈暈）、最近記錄（右上「全部 ›」→library）、標籤雲（「管理 ›」→tags）；home-sec 為 flex+滿寬底線 |
 | note | 編輯表單；內容欄手寫；角色列 baseline 對齊；閱讀模式 badge |
 | apps | 磚牆 9 格；標題右「⇅ 排序」；**拖排=transform 位移制**（拖曳期間零 DOM 重建；讓位步距=實測 tiles[1].left-tiles[0].left；命中=寬/3；touchcancel/visibilitychange/關閉排序皆取消不提交）；排序模式抑制選取/長按選單/滑動手勢；順序存 settings.appsOrder |
-| library | v3.1 新增（≠書櫃）。四下拉 2×2 毛玻璃黏頂（排序/進度/評分/狀態），頁內狀態 `FT._lib`，`FT.libSet(k,v)` 統一入口；皮革卡片列 |
+| library | v3.1 新增（≠書櫃）。**五下拉**毛玻璃黏頂（排序/進度/評分/完成度＋v3.7 作品狀態，2 欄 grid、第 5 個 `nth-child(5)` span 2 佔滿末行），頁內狀態 `FT._lib`，`FT.libSet(k,v)` 統一入口；皮革卡片列 |
 | tags | v3.0b 自設定獨立；元素 id 沿用 settings-tag-list 等；管理函式零改動 |
 | authors | 列表↔細節；細節頭「＋ 新增書評」`FT.newBookForAuthor` 自動帶作者；（未填作者）無此鈕 |
-| stats / backup / trash | 變數換色即可，結構穩定 |
+| stats | 六區塊：總覽/評分分佈/**連載狀態**(v3.7)/平台/**完成度＋還缺什麼**(v3.7)/熱門標籤 TOP20。全部即時由 `FT.books` 聚合，不寫伺服器；`tally(key)`＋`platBlock(title,key)` 是加新分佈區塊的現成工具 |
+| backup / trash | 變數換色即可，結構穩定；備份頁四張 io-card（全部備份/書評資料/**Markdown**(v3.7 匯出限定)/設定檔）|
 | settings | 三分頁 ⚙️一般/📖書目/🎧有聲（黏頂毛玻璃）；各區摺疊卡由 `settingsSecOpen` 控制；狀態子標題低調樣式 |
 | changelog | 兩層摺疊（大版本系列→小版本系列）+ 惰性渲染；最新系列預設開 |
 
 ## 7. 互動機制
 - **展示模式**（v3.4，GitHub Pages 訪客沙盒）：閘門=`FT.isDemo()`（hostname 以 github.io 結尾才 true——shttps 離線**絕不誤觸發**，此設計不得改用「伺服器連不上」判斷）；開機 `FT.initDemo()` 在 loadAll **之前**執行，展示環境且 localStorage `futaba_v2` 為空時以 `assets/demo.json` 為種子（books 9 本=Ting 真實書評、trash 空、settings 只收 tagDict+平台+選項清單等內容性鍵），之後全走既有離線 fallback，訪客增刪改只存自己瀏覽器；`body.demo` 顯示 `#demo-banner` 常駐橫幅。**demo.json 內容更動需 Ting 過目才可 push（公開上網）**。
 - **存檔提示誠實化**（v3.4）：`FT.showSaved()` 依 `FT._lastWrite.ok` 區分——伺服器寫入失敗顯示「⚠ 未寫入伺服器」（`.warn` 紅字、4 秒），不再失敗也顯示已儲存；展示模式例外（localStorage 即預期儲存地，寫入即成功）。
-- **搜尋語法**（search.js）：`#標籤`、`@人名`、`~內文`（v3.3 起；全文=簡介+心得+備註+角色描述，多詞 AND，可混用）；無前綴文字只搜書名+作者。簡繁比對：**只對查詢詞做變體展開**（sc2tcVariants 有 64 種上限），長原文僅 lowercase 直接 includes——不得把原文丟進變體展開，會被截斷漏比。
+- **搜尋語法**（search.js）：`#標籤`、`@人名`、`~內文`（v3.3 起；全文=簡介+心得+備註+角色描述）、`:狀態`（v3.7 起；比對 workStatus+audioStatus+myProgress）——各前綴多詞皆 AND、可互相混用；無前綴文字只搜書名+作者。簡繁比對：**只對查詢詞做變體展開**（sc2tcVariants 有 64 種上限），長原文僅 lowercase 直接 includes——不得把原文丟進變體展開，會被截斷漏比。
 - **手勢**（app.js）：右滑開側欄；左滑=側欄開時關側欄、否則開功能頁（apps-page 加 .slide-in）；搜尋中（window._searchQ）與排序模式（FT._appsSort）停用；防誤觸=位移>70/垂直<60/耗時<600ms/輸入框起點忽略。
 - **返回鍵**：popstate 先攔搜尋（清除+補 pushState 留原頁）；showPage 開頭清搜尋殘留；✕ 按鈕的隱藏收斂在 `FT.clearSearch` 內。
 - **強制更新** `FT.forceUpdate(skipConfirm)`：註銷全部 SW → 清全部快取 → `location.replace(pathname+'?fresh=')`；`#update` hash 開機偵測自動觸發（免確認）。
 - 橫式攔截層 `#rotate-guard`：橫向+觸控+高≤520px 顯示；manifest portrait 僅安裝版有效。
-- 排序下拉 `_sortKey` 不持久化（開機 date-desc）；**無 A→Z 選項**（中文無意義，v3.1a 移除）。
+- 排序下拉 `_sortKey` 不持久化（開機 date-desc）；**無 A→Z 選項**（中文無意義，v3.1a 移除）；**無「狀態排序」**（v3.7 移除——它讀一個不存在的 settings 鍵與不存在的 `b.status`，選中即 TypeError 中斷側欄渲染，是 v2.x 狀態拆三組的遺留死路徑）。
+- **側欄篩選下拉**（v3.7）：單一 `#filter-status` 用 `<optgroup>` 涵蓋兩維度，value 帶前綴 `prog:` / `work:`；`renderList` 依前綴分派比對 `myProgress` 或 `workStatus`，無前綴的舊值一律當 `prog`。側欄寬度有限，**不要再加第三個 select**——要擴維度就加 optgroup。
 
 ## 8. 路線圖與待辦
 - **已提案未動工（後段不急）**：側欄改版（A 維持現狀=推薦/B 純導航/C 最近+釘選），等 Ting 選

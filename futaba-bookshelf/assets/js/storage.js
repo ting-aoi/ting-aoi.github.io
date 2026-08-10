@@ -132,16 +132,36 @@ FT.emptyBook = id => ({
   tags:[], created:Date.now()
 });
 
-FT.completionLevel = function(b) {
+// v3.7：把「缺哪些欄位」抽成單一事實來源，completionLevel 與統計頁共用，
+// 避免兩處各算各的而失準。hard 缺任一 = red；hard 齊全但 soft 缺 = yellow。
+FT.MISSING_LABELS = ['書名','作者','我的進度','配音類型','AI 配音','換 CV','聲音體驗',
+                     '閱讀平台','聽書平台','重要角色','標籤','劇情簡介','個人心得'];
+FT.missingFields = function(b) {
   const noAudio = b.audioPlatform==='無';
-  const base    = ['author','myProgress'];
-  const audio   = noAudio ? [] : ['cvType','aiCv','cvChange','voiceExp'];
-  const hardOk  = [...base,...audio].every(k=>b[k]&&b[k].trim());
-  const platOk  = b.textPlatform && b.audioPlatform;
-  const charOk  = b.characters && b.characters.length>0;
-  const tagOk   = b.tags && b.tags.length>0;
-  if (!b.title||!hardOk||!platOk||!charOk||!tagOk) return 'red';
-  if (!b.synopsis||!b.review) return 'yellow';
+  const filled  = k => b[k] && b[k].trim();
+  const hard = [];
+  if (!b.title) hard.push('書名');
+  if (!filled('author')) hard.push('作者');
+  if (!filled('myProgress')) hard.push('我的進度');
+  if (!noAudio) {
+    if (!filled('cvType'))    hard.push('配音類型');
+    if (!filled('aiCv'))      hard.push('AI 配音');
+    if (!filled('cvChange'))  hard.push('換 CV');
+    if (!filled('voiceExp'))  hard.push('聲音體驗');
+  }
+  if (!b.textPlatform)  hard.push('閱讀平台');
+  if (!b.audioPlatform) hard.push('聽書平台');
+  if (!(b.characters && b.characters.length>0)) hard.push('重要角色');
+  if (!(b.tags && b.tags.length>0)) hard.push('標籤');
+  const soft = [];
+  if (!b.synopsis) soft.push('劇情簡介');
+  if (!b.review)   soft.push('個人心得');
+  return { hard, soft };
+};
+FT.completionLevel = function(b) {
+  const m = FT.missingFields(b);
+  if (m.hard.length) return 'red';
+  if (m.soft.length) return 'yellow';
   return 'ok';
 };
 

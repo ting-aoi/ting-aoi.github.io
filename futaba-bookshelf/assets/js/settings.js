@@ -342,6 +342,17 @@ FT.exportBooksOnly = async function() {
   _download(blob, `雙葉書庫_書評資料_${FT.nowStamp()}.zip`);
 };
 
+// v3.7：整庫 Markdown 獨立出口（原本只夾在「全部備份」zip 裡，沒有單獨入口）
+FT.exportMarkdown = async function() {
+  FT.saveCurrentBook();
+  const zip = new JSZip();
+  const notesFolder = zip.folder('notes');
+  const usedNames = new Set();
+  Object.values(FT.books).forEach(b => notesFolder.file(FT.uniqueFilename(b.title, usedNames), FT.bookToMd(b)));
+  const blob = await zip.generateAsync({type:'blob'});
+  _download(blob, `雙葉書庫_Markdown_${FT.nowStamp()}.zip`);
+};
+
 FT.exportSettings = function() {
   const blob = new Blob([JSON.stringify(FT.settings,null,2)], {type:'application/json'});
   _download(blob, `雙葉書庫_設定_${FT.nowStamp()}.json`);

@@ -69,19 +69,20 @@ function fullTextMatch(hayRaw, needleN) {
 }
 
 FT.parseSearch = function(q) {
-  const tags = [], chars = [], fulls = [];
+  const tags = [], chars = [], fulls = [], stats = [];
   const rest = q
     .replace(/#(\S+)/g, (_, t)  => { tags.push(normalizeSearch(t));  return ''; })
     .replace(/@(\S+)/g, (_, ch) => { chars.push(normalizeSearch(ch)); return ''; })
     .replace(/~(\S+)/g, (_, f)  => { fulls.push(normalizeSearch(f)); return ''; })
+    .replace(/:(\S+)/g, (_, s)  => { stats.push(normalizeSearch(s)); return ''; })
     .trim();
-  return { tags, chars, fulls, rest: normalizeSearch(rest) };
+  return { tags, chars, fulls, stats, rest: normalizeSearch(rest) };
 };
 
 
 // Match a book against parsed search tokens
 FT.bookMatchesSearch = function(b, parsed) {
-  const { tags, chars, fulls, rest } = parsed;
+  const { tags, chars, fulls, stats, rest } = parsed;
   const titleN  = normalizeSearch(b.title  || '');
   const authorN = normalizeSearch(b.author || '');
 
@@ -93,6 +94,12 @@ FT.bookMatchesSearch = function(b, parsed) {
     if (!chars.every(ck =>
       (b.characters || []).some(c => searchMatch(normalizeSearch(c.name || ''), ck))
     )) return false;
+  }
+  if (stats && stats.length) {
+    // :狀態 — 比對作品狀態＋聽書狀態＋我的進度，多詞 AND
+    const statFields = [b.workStatus, b.audioStatus, b.myProgress]
+                       .filter(Boolean).map(s => normalizeSearch(s));
+    if (!stats.every(sk => statFields.some(sf => searchMatch(sf, sk)))) return false;
   }
   if (fulls && fulls.length) {
     // ~keyword full-text: 簡介＋心得＋備註＋角色描述，多詞 AND（與 #tag 一致）

@@ -188,13 +188,13 @@ window._filterStatus = '';
 window._sortKey    = 'date-desc';
 
 FT.sortBooks = function(list) {
-  const idx = FT.settings.statusOptions;
+  // v3.7 移除 'status' 排序：它讀 settings.statusOptions（全站不存在）與 b.status
+  //（欄位不存在），選中即 TypeError 中斷側欄渲染——v2.x 狀態拆三組時的遺留死路徑。
   return list.sort((a, b) => {
     switch (window._sortKey) {
       case 'date-asc':   return a.created - b.created;
       case 'rating-desc':return (b.rating||0) - (a.rating||0);
       case 'rating-asc': return (a.rating||0) - (b.rating||0);
-      case 'status':     return idx.indexOf(a.status) - idx.indexOf(b.status);
       default:           return b.created - a.created;
     }
   });
@@ -207,8 +207,14 @@ FT.renderList = function() {
   const parsed = FT.parseSearch(q.toLowerCase());
   const badgeMap = { red: '◆', yellow: '◇' };
 
+  // v3.7 篩選值格式：'prefix:值'；無前綴的舊值一律視為 prog（不持久化，僅防殘留）
+  const fs = window._filterStatus || '';
+  const fi = fs.indexOf(':');
+  const fKey = fi > 0 ? fs.slice(0, fi) : 'prog';
+  const fVal = fi > 0 ? fs.slice(fi + 1) : fs;
+
   let list = Object.values(FT.books).filter(b => {
-    if (window._filterStatus && b.myProgress !== window._filterStatus) return false;
+    if (fVal && (fKey === 'work' ? b.workStatus : b.myProgress) !== fVal) return false;
     if (!q) return true;
     return FT.bookMatchesSearch(b, parsed);
   });
@@ -352,14 +358,20 @@ FT.toast = function(msg, ms=2200) {
   t._h = setTimeout(() => t.classList.remove('on'), ms);
 };
 
+// v3.7：單一下拉涵蓋兩個維度（側欄寬度有限，不再加 select）。
+// value 帶前綴區分：prog:<我的進度> / work:<作品狀態>。
 FT.renderStatusFilter = function() {
   const sel = FT.$('filter-status');
   if (!sel) return;
   const cur = sel.value;
-  sel.innerHTML = '<option value="">── 全部進度 ──</option>' +
-    (FT.settings.myProgressOptions||[]).map(s =>
-      `<option value="${FT.escH(s)}" ${cur===s?'selected':''}>${FT.escH(s)}</option>`
-    ).join('');
+  const group = (label, prefix, opts) => !opts.length ? '' :
+    `<optgroup label="${FT.escH(label)}">` + opts.map(s => {
+      const v = prefix + ':' + s;
+      return `<option value="${FT.escH(v)}"${cur===v?' selected':''}>${FT.escH(s)}</option>`;
+    }).join('') + '</optgroup>';
+  sel.innerHTML = '<option value="">── 全部 ──</option>'
+    + group('我的進度', 'prog', FT.settings.myProgressOptions||[])
+    + group('作品狀態', 'work', FT.settings.workStatusOptions||[]);
   sel.value = cur;
 };
 
