@@ -33,7 +33,7 @@ WOL.vitalsHtml = function (compact) {
   return meter('hp', 'heart', '生命', g.hp, d.hpMax, g.hp <= d.hpMax * 0.25)
     + meter('st', 'bolt', '體力', g.st, d.stMax, g.st <= d.stMax * 0.2)
     + (compact ? '' :
-        meter('food', 'meat', '食物', g.food, Math.max(g.food, maxFood), g.food === 0)
+        meter('food', 'ration', '食物', g.food, Math.max(g.food, maxFood), g.food === 0)
       + meter('water', 'drop', '水', g.water, Math.max(g.water, maxWater), g.water === 0));
 };
 

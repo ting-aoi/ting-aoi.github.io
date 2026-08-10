@@ -1,5 +1,5 @@
-// Wasteland SW — BUILD: 1786401398
-const BUILD = '1786401398';
+// Wasteland SW — BUILD: 1786401658
+const BUILD = '1786401658';
 const CACHE = 'wol-' + BUILD;
 const STATIC = [
   './manifest.json',

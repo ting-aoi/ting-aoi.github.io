@@ -105,6 +105,11 @@ body::before{content:'';position:fixed;inset:0;background:var(--bg-glow);pointer
 .sb-bottom{margin-top:auto;padding-bottom:calc(10px + var(--safe-bottom));border-top:1px solid rgba(232,224,209,0.10)}
 .sb-vitals{padding:14px 16px;border-bottom:1px solid rgba(232,224,209,0.10)}
 .sb-lock{font-size:11.5px;color:var(--rust2);padding:10px 16px;background:rgba(207,122,66,0.12);display:none}
+/* 側欄是恆深的 --steel，裡頭的儀表不能吃 --ink／--paper3——日間主題下那是深色，
+   會變成深壓深整個看不見（v0.1 只截了夜間側欄所以沒露餡）。一律給固定亮色。 */
+#sidebar .meter-head{color:rgba(232,224,209,0.62)}
+#sidebar .meter-val{color:rgba(232,224,209,0.92)}
+#sidebar .meter-bar{background:rgba(0,0,0,0.32);border-color:rgba(232,224,209,0.14)}
 body.in-combat .sb-lock{display:block}
 
 #content{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}

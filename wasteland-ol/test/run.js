@@ -62,6 +62,11 @@ chk('日夜雙主題共用元件、只換變數', css.includes('body.night{') &&
 chk('頂欄側欄用恆深變數（不隨日夜翻轉）',
   (css.match(/background:var\(--steel\)/g) || []).length >= 2);
 chk('svg.ic 顏色吃 currentColor（雙主題免分版）', /svg\.ic\{[^}]*stroke:currentColor/.test(css));
+// v0.1b：側欄恆深，裡頭的儀表若吃 --ink／--paper3 會在日間主題深壓深整個看不見
+chk('側欄儀表用固定亮色，不吃日夜變數', (() => {
+  const rules = css.match(/#sidebar \.meter-[\w-]+\{[^}]*\}/g) || [];
+  return rules.length >= 3 && rules.every(r => !/var\(--(ink|paper)/.test(r));
+})());
 
 const symbols = [...new Set((html.match(/<symbol id="i-([\w-]+)"/g) || [])
   .map(s => s.match(/i-([\w-]+)/)[1]))];

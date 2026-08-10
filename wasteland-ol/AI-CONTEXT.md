@@ -1,6 +1,6 @@
 # AI-CONTEXT — 廢土 Online（wasteland-ol）
 
-> 交接文件 · 對應版本 **v0.1a** · 供 AI 助手跨對話接手用。
+> 交接文件 · 對應版本 **v0.1b** · 供 AI 助手跨對話接手用。
 > 動工前先讀完本檔與 `CONVENTIONS.md`（鎖定決策在那邊）。
 
 ## 0. 一句話
@@ -70,7 +70,7 @@ wasteland-ol/
 ├─ bump.py           版本工具（見 CONVENTIONS §4）
 ├─ CHANGES.md        待寫入 changelog 的條目（bump 時消費並清空）
 ├─ AI-CONTEXT.md     本檔     CONVENTIONS.md  鎖定決策
-├─ test/             run.js（88 條斷言）＋ dom-stub.js ＋ fixtures/（測試專用假怪）
+├─ test/             run.js（89 條斷言）＋ dom-stub.js ＋ fixtures/（測試專用假怪）
 └─ assets/
    ├─ css/main.css   全部樣式，變數層日夜雙主題
    ├─ changelog.json 更新日誌資料（新→舊，bump 寫入）
