@@ -1,0 +1,41 @@
+{
+  "name": "廢土 Online",
+  "short_name": "廢土",
+  "description": "末日生存管理遊戲",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#15171a",
+  "theme_color": "#2a2823",
+  "orientation": "portrait",
+  "lang": "zh-TW",
+  "categories": [
+    "games"
+  ],
+  "icons": [
+    {
+      "src": "assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/icons/icon-mask-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "assets/icons/icon-mask-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "scope": "./"
+}

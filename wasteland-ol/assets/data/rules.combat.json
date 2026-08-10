@@ -1,0 +1,57 @@
+{
+  "schemaVersion": 1,
+  "_note": "戰鬥規則。四動作參數與撤退公式。v0.1 為提案值，待 Ting 確認。",
+  "actions": {
+    "attack": {
+      "label": "攻擊",
+      "staminaCost": 2,
+      "_note": "體力不足時仍可攻擊，但傷害減半（weakDamagePct）。"
+    },
+    "guard": {
+      "label": "戒備",
+      "damageTakenPct": 40,
+      "staminaCost": 1,
+      "recoverThreshold": 3,
+      "staminaRecover": 2,
+      "_note": "DEF − 敵ATK ≥ recoverThreshold 時改為回復 staminaRecover 點體力，否則扣 staminaCost。"
+    },
+    "rest": {
+      "label": "喘息",
+      "damageTakenPct": 100,
+      "staminaRecover": 5,
+      "_note": "完全無防禦、全額受傷，換取較多體力。"
+    },
+    "retreat": {
+      "label": "撤退",
+      "staminaCost": 2,
+      "_note": "成功與失敗都扣體力。"
+    },
+    "item": {
+      "label": "道具",
+      "staminaCost": 0,
+      "_note": "使用道具耗掉整個回合，敵人照樣行動。"
+    }
+  },
+  "retreat": {
+    "base": 50,
+    "spdFactor": 3,
+    "min": 20,
+    "max": 90,
+    "_formula": "clamp(base + (我SPD − 敵SPD) × spdFactor, min, max) %"
+  },
+  "damage": {
+    "minDamage": 1,
+    "weakDamagePct": 50,
+    "_formula": "max(minDamage, ATK − 敵DEF)，再依爆擊 / 戒備 / 體力不足調整"
+  },
+  "hit": {
+    "min": 10,
+    "max": 95,
+    "_formula": "clamp(攻方HIT − 守方EVA, min, max) %"
+  },
+  "defeat": {
+    "returnTo": "shelter",
+    "hpOnDefeat": 1,
+    "_note": "敗北不死亡，以 1 HP 返回避難所。"
+  }
+}
