@@ -82,8 +82,10 @@ python3 ~/.claude/skills/ting-projects/scripts/verify_zip.py wasteland wasteland
 
 ## 5. 部署（雙管道）
 
-1. **GitHub Pages**：推 `wasteland-ol` 分支 → 開草稿 PR → **由 Ting 親自合併進 `main`**
-   才會更新線上版。**AI 不得直推 main、不得自行按合併**（Ting 2026-08 定案）。
+1. **GitHub Pages**：推 `wasteland-ol` 分支 → PR 改 ready → **自動合併進 `main`**，
+   線上版隨即更新（Ting 2026-08-10 指示，**僅限廢土**；雙葉仍由 Ting 親自按）。
+   仍走 PR 不直推 main，為的是留下可回溯的 diff。
+   **沒有人再逐次把關 diff 了，推之前務必跑完測試與差異檢查。**
    分支樹裡的 `futaba-bookshelf/` 一行都不要動——刪掉它，合併後雙葉會從線上站台消失。
    完整規則見 repo 根目錄 `BRANCHES.md`，推送前必驗見 `AI-CONTEXT.md` §4。
    （zip 被 `.gitignore` 排除不入庫。）

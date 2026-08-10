@@ -72,8 +72,13 @@ wasteland-ol ─────┘
 - 本專案的分支是 **`wasteland-ol`**，從 main 正常長出來。雙葉那條是 `futaba-bookshelf`，不歸這裡碰。
 - GitHub Pages **只從 `main` 部署**，`futaba-bookshelf/` 與 `wasteland-ol/` 兩個資料夾必須同時
   存在於 main——main 是整合分支＝部署分支，**不是被污染**。
-- **`main` 只接受合併，不直接提交；合併一律走 PR 且由 Ting 親自按。**
-  AI 只負責推分支＋開草稿 PR，不得自行合併、不得直推 main。
+- **`main` 只接受合併，不直接提交**（仍走 PR，留下可回溯的 diff 紀錄）。
+- **廢土的合併是自動的**（Ting 2026-08-10 指示）：每次推 `wasteland-ol` 之後，
+  **確保 PR 存在 → 從草稿改為 ready → 直接合併進 main**，線上版隨即更新。
+  這推翻了原本「由 Ting 親自按合併」的限制，但**僅限廢土**——
+  雙葉書庫仍然要 Ting 親手按，不要弄混，也不要去改雙葉的規則。
+- 自動合併不等於可以少驗：**推之前照樣要跑完 `node test/run.js` 與下面兩道差異檢查**。
+  以前有 Ting 把關 diff，現在沒有了，出錯會直接上線。
 
 ### ⚠️ 分支樹裡看得到 `futaba-bookshelf/`，一行都不要動
 
