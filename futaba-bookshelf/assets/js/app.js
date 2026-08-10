@@ -212,6 +212,8 @@ function wireEvents() {
   // 逐步執行，每步獨立隔離，單一失敗不阻斷後續
   [
     ['demoBanner',        function(){ if (FT.isDemo()) document.body.classList.add('demo'); }],
+    ['sc2tcNotice',       function(){ if (!FT.sc2tcReady) setTimeout(function(){
+                            FT.toast('簡繁對照表未載入，搜尋暫時無法簡繁互通', 3500); }, 1200); }],
     ['applyNightMode',    function(){ FT.applyNightMode(FT.settings.nightMode); }],
     ['initConflictModal', function(){ FT.initConflictModal(); }],
     ['initPWA',           function(){ FT.initPWA(); }],

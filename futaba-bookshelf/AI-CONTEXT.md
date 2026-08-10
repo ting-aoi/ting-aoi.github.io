@@ -1,5 +1,5 @@
 # AI-CONTEXT — 雙葉書庫（Futaba）
-> 交接文件 · 對應版本 **v3.7** · 供 AI 助手跨對話接手用。動工前先讀完本檔。
+> 交接文件 · 對應版本 **v3.7a** · 供 AI 助手跨對話接手用。動工前先讀完本檔。
 
 ## 0. 一句話
 個人書評 PWA：vanilla JS、全域 `FT` 命名空間、shttps 本地檔案伺服器（localhost:8080）做資料持久化，Android + Brave 為主要環境，使用者 Ting，全程繁體中文。
@@ -93,7 +93,9 @@ booknotes-pwa/
 ## 7. 互動機制
 - **展示模式**（v3.4，GitHub Pages 訪客沙盒）：閘門=`FT.isDemo()`（hostname 以 github.io 結尾才 true——shttps 離線**絕不誤觸發**，此設計不得改用「伺服器連不上」判斷）；開機 `FT.initDemo()` 在 loadAll **之前**執行，展示環境且 localStorage `futaba_v2` 為空時以 `assets/demo.json` 為種子（books 9 本=Ting 真實書評、trash 空、settings 只收 tagDict+平台+選項清單等內容性鍵），之後全走既有離線 fallback，訪客增刪改只存自己瀏覽器；`body.demo` 顯示 `#demo-banner` 常駐橫幅。**demo.json 內容更動需 Ting 過目才可 push（公開上網）**。
 - **存檔提示誠實化**（v3.4）：`FT.showSaved()` 依 `FT._lastWrite.ok` 區分——伺服器寫入失敗顯示「⚠ 未寫入伺服器」（`.warn` 紅字、4 秒），不再失敗也顯示已儲存；展示模式例外（localStorage 即預期儲存地，寫入即成功）。
-- **搜尋語法**（search.js）：`#標籤`、`@人名`、`~內文`（v3.3 起；全文=簡介+心得+備註+角色描述）、`:狀態`（v3.7 起；比對 workStatus+audioStatus+myProgress）——各前綴多詞皆 AND、可互相混用；無前綴文字只搜書名+作者。簡繁比對：**只對查詢詞做變體展開**（sc2tcVariants 有 64 種上限），長原文僅 lowercase 直接 includes——不得把原文丟進變體展開，會被截斷漏比。
+- **閱讀模式**（v3.7a 深化）：`FT.applyReadMode` 在 `body` 掛 `read-mode` class，**純 CSS 卸下輸入框外觀**（邊框/底色/內距）並放大字級行距——表單 DOM 完全不動，不會有編輯↔閱讀兩份渲染分岔。**切換後必須呼叫 `FT.resizeLongFields()`**：字級行距變了，同樣文字需要更高的 textarea，不重算會出現內捲軸把心得截斷（v3.7a 踩過）。
+- **外部依賴**：JSZip 走 cdnjs CDN（匯出入用），SW 對它是網路優先＋快取回退，但快取版本化、`activate` 會清舊版——**進版後首次離線使用會抓不到**。v3.7a 已在五個入口加 `_zipReady()` 防護與友善提示；根治要 vendor 到本地（Ting 2026-08 決定暫不做）。
+- **搜尋語法**（search.js）：`#標籤`、`@人名`、`~內文`（v3.3 起；全文=簡介+心得+備註+角色描述）、`:狀態`（v3.7 起；比對 workStatus+audioStatus+myProgress）——各前綴多詞皆 AND、可互相混用；無前綴文字只搜書名+作者。**前綴只在詞首（字串開頭或空白後）生效**（v3.7a）——否則 abc:def、mail@x.com、12:30 會被誤拆；共用 `PREFIX(ch)` 產生器，加新前綴照抄即可。簡繁比對：**只對查詢詞做變體展開**（sc2tcVariants 有 64 種上限），長原文僅 lowercase 直接 includes——不得把原文丟進變體展開，會被截斷漏比。
 - **手勢**（app.js）：右滑開側欄；左滑=側欄開時關側欄、否則開功能頁（apps-page 加 .slide-in）；搜尋中（window._searchQ）與排序模式（FT._appsSort）停用；防誤觸=位移>70/垂直<60/耗時<600ms/輸入框起點忽略。
 - **返回鍵**：popstate 先攔搜尋（清除+補 pushState 留原頁）；showPage 開頭清搜尋殘留；✕ 按鈕的隱藏收斂在 `FT.clearSearch` 內。
 - **強制更新** `FT.forceUpdate(skipConfirm)`：註銷全部 SW → 清全部快取 → `location.replace(pathname+'?fresh=')`；`#update` hash 開機偵測自動觸發（免確認）。

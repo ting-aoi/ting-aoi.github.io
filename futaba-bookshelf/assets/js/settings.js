@@ -315,7 +315,16 @@ FT.addTagFromSettings = function() {
 
 
 // ── Export functions ──
+// v3.7a：JSZip 走 CDN，離線或 CDN 不通時會是 undefined。原本五個入口直接 new JSZip()，
+// 未捕捉的 ReferenceError 讓按鈕「按了毫無反應」。統一在入口擋下並說人話。
+function _zipReady() {
+  if (typeof JSZip !== 'undefined') return true;
+  const msg = '壓縮元件尚未載入（需要網路連線一次），請連上網後重新整理再試。';
+  FT.toast ? FT.toast(msg, 4000) : alert(msg);
+  return false;
+}
 FT.exportAll = async function() {
+  if (!_zipReady()) return;
   FT.saveCurrentBook();
   const zip = new JSZip();
   // Raw book JSON files
@@ -333,6 +342,7 @@ FT.exportAll = async function() {
 };
 
 FT.exportBooksOnly = async function() {
+  if (!_zipReady()) return;
   FT.saveCurrentBook();
   const zip = new JSZip();
   const booksFolder = zip.folder('books');
@@ -344,6 +354,7 @@ FT.exportBooksOnly = async function() {
 
 // v3.7：整庫 Markdown 獨立出口（原本只夾在「全部備份」zip 裡，沒有單獨入口）
 FT.exportMarkdown = async function() {
+  if (!_zipReady()) return;
   FT.saveCurrentBook();
   const zip = new JSZip();
   const notesFolder = zip.folder('notes');
@@ -386,6 +397,7 @@ function _confirmImport(newBooks, kind) {
 FT.importAll = async function(input) {
   const file = input.files[0]; if (!file) return;
   input.value = '';
+  if (!_zipReady()) return;
   try {
     const zip = await JSZip.loadAsync(file);
     const newBooks = {};
@@ -411,6 +423,7 @@ FT.importAll = async function(input) {
 FT.importBooksOnly = async function(input) {
   const file = input.files[0]; if (!file) return;
   input.value = '';
+  if (!_zipReady()) return;
   try {
     const zip = await JSZip.loadAsync(file);
     const newBooks = {};

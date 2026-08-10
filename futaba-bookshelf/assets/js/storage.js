@@ -533,16 +533,22 @@ FT.saveAll = async function() {
     if (_saveCount === 1 || _saveCount % 20 === 0) await _dailyBackup();
     await _ensureFolders();
     // Diff write: only books whose content changed since last write
+    // v3.7a：單本失敗原本被 Promise.all 吞掉、整體仍標成功——存檔提示因此說謊。
+    // 改為計數後反映到 _lastWrite，讓狀態列的「⚠ 未寫入伺服器」誠實觸發。
+    const failed = [];
     await Promise.all([
       ...Object.values(FT.books).map(b => _writeBookIfChanged(b)
-        .catch(e => console.warn('[Futaba] book write:', b.id, e.message))),
+        .catch(e => { failed.push(b.id); console.warn('[Futaba] book write:', b.id, e.message); })),
       ...Object.values(FT.trash).map(b => _writeBookIfChanged(b)
-        .catch(e => console.warn('[Futaba] trash write:', b.id, e.message))),
+        .catch(e => { failed.push(b.id); console.warn('[Futaba] trash write:', b.id, e.message); })),
     ]);
     await _commitIndex();
-    await _writeSettings().catch(e => console.warn('[Futaba] settings write:', e.message));
-    _serverAvailable = true;
-    FT._lastWrite = {ok:true, status:204, path:_dataDir, at:new Date().toLocaleTimeString()};
+    await _writeSettings().catch(e => { failed.push('settings'); console.warn('[Futaba] settings write:', e.message); });
+    _serverAvailable = failed.length === 0;
+    FT._lastWrite = failed.length
+      ? {ok:false, status:0, path:_dataDir, err:failed.length+' 個項目寫入失敗', failed,
+         at:new Date().toLocaleTimeString()}
+      : {ok:true, status:204, path:_dataDir, at:new Date().toLocaleTimeString()};
   } catch(e) {
     _serverAvailable = false;
     FT._lastWrite = {ok:false, status:0, path:_dataDir, err:e.message, at:new Date().toLocaleTimeString()};

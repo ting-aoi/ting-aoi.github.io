@@ -13,8 +13,9 @@ function _autoResize(el) {
   el.style.height = el.scrollHeight + 'px';
   if (scroller) scroller.scrollTop = top;
 }
+const _LONG_FIELDS = ['f-synopsis','f-review','f-notes'];
 FT.wireTextareas = function() {
-  ['f-synopsis','f-review','f-notes'].forEach(id => {
+  _LONG_FIELDS.forEach(id => {
     const el = FT.$(id);
     if (!el || el._resizeWired) return;
     el._resizeWired = true;
@@ -22,10 +23,18 @@ FT.wireTextareas = function() {
     _autoResize(el);
   });
 };
+// v3.7a：閱讀視圖會改字級與行距，同樣的文字需要更高的框——不重算就會出現
+// 內捲軸把心得截斷。切換模式後統一重量一次。
+FT.resizeLongFields = function() {
+  _LONG_FIELDS.forEach(id => { const el = FT.$opt(id); if (el) _autoResize(el); });
+};
 
 // ── Read mode ──
 FT.applyReadMode = function() {
   const ro = FT.isReadMode;
+  // v3.7a 閱讀視圖：掛 class 讓 CSS 卸下輸入框外觀（邊框/底色/內距）並放大行距，
+  // 表單 DOM 完全不動——不做 DOM 手術就不會有「編輯↔閱讀」兩份渲染分岔的風險。
+  document.body.classList.toggle('read-mode', ro);
   // new-btn
   const newBtn = FT.$('new-btn');
   if (newBtn) {
@@ -57,6 +66,8 @@ FT.applyReadMode = function() {
   // Re-render characters: clears any in-progress edit row and drag handles
   if (FT.activeId && FT.books[FT.activeId])
     FT.renderCharList(FT.books[FT.activeId].characters || []);
+  // 字級/行距已隨 read-mode 改變，長文欄位高度必須跟著重算（v3.7a）
+  FT.resizeLongFields();
 };
 
 // ── Open / load ──

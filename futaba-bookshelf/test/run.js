@@ -50,6 +50,19 @@ chk('v3.6：FT.APPS 改用具名圖示', (() => {
   return p.includes("icon:'home'") && p.includes("icon:'library'") && !/icon:'[^a-z]/.test(p);
 })());
 chk('v3.6：FT.icon 助手存在', read('assets/js/storage.js').includes('FT.icon'));
+chk('v3.7a：五個 zip 入口全有 JSZip 防護', (() => {
+  const s = read('assets/js/settings.js');
+  return s.includes('function _zipReady()') && (s.match(/_zipReady\(\)/g) || []).length === 6;
+})());
+chk('v3.7a：單本寫入失敗會反映到 _lastWrite', (() => {
+  const s = read('assets/js/storage.js');
+  return s.includes('failed.push(b.id)') && s.includes('_serverAvailable = failed.length === 0');
+})());
+chk('v3.7a：閱讀視圖靠 body.read-mode（不做 DOM 手術）',
+  read('assets/js/editor.js').includes("classList.toggle('read-mode', ro)")
+  && css.includes('body.read-mode .field textarea'));
+chk('v3.7a：切換閱讀模式後重算長文高度（否則字級變大會截斷）',
+  read('assets/js/editor.js').includes('FT.resizeLongFields();'));
 chk('v3.6b：磚牆按鈕 color 明確（不掉 UA 黑）', css.includes('.app-tile{color:var(--ink)}'));
 chk('v3.6b：圖示金色點綴規則齊備', css.includes('.app-tile-icon,.sec-title .ic'));
 chk('v3.6b：齒輪已圓角化（Q 貝茲曲線）', /id="i-gear"[^>]*><path d="M[\d. ]+Q/.test(html));
@@ -301,6 +314,18 @@ chk('拖曳中斷保險齊備', (() => {
   chk('v3.7：多個 : 詞為 AND', ms(':連載中 :製作中') && !ms(':連載中 :已完結'));
   chk('v3.7：: 與其他前綴混用', ms('#系統流 :連載中 ~燈塔'));
   chk('v3.7：: 簡體查詢命中繁體狀態', ms(':连载中'));
+  // v3.7a 前綴只在詞首生效
+  const P = s => FT.parseSearch(s);
+  chk('v3.7a：夾在字中間的符號不被當前綴', (() => {
+    const a = P('abc:def'), b = P('a#b'), c = P('mail@x.com'), d = P('12:30 開始');
+    return a.stats.length===0 && b.tags.length===0 && c.chars.length===0 && d.stats.length===0;
+  })());
+  chk('v3.7a：詞首前綴仍正常', (() => {
+    const a = P('#系統流'), b = P(':連載中'), c = P('~內文'), d = P('@人名');
+    return a.tags.length===1 && b.stats.length===1 && c.fulls.length===1 && d.chars.length===1;
+  })());
+  chk('v3.7a：連續兩個前綴不黏成一詞', P('#a #b').tags.length === 2);
+  chk('v3.7a：夾中間的符號留在 rest 供書名比對', P('abc:def').rest.split('|')[0] === 'abc:def');
   chk('v3.3：長內文不被 64 變體上限截斷', (() => {
     // 故障注入等價驗證：needle 藏在超長 haystack 尾端——若 haystack 走了變體展開，
     // 64 上限會把它截成前綴，此斷言必失敗

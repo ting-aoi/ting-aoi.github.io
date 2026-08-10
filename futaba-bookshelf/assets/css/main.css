@@ -567,6 +567,23 @@ body.night #rotate-guard{background:#1c1813}
 /* 排序模式下磚塊的位移由拖曳引擎全權接管（inline transform），按下不縮 */
 .apps-grid.sorting .app-tile:active{transform:none}
 
+/* ── 閱讀視圖（v3.7a）：閱讀模式下卸下輸入框外觀，讓書評讀起來像一頁文章 ──
+   只換樣式、不動 DOM；欄位仍是原本的 input/textarea（唯讀），
+   高度由既有的 _autoResize 撐開，因此內容一律完整可見、不出現內捲軸。 */
+body.read-mode .field input,
+body.read-mode .field select,
+body.read-mode .field textarea{
+  background:transparent;border-color:transparent;padding-left:0;padding-right:0}
+body.read-mode .field textarea{font-size:14.5px;line-height:2}
+body.read-mode .field label{color:var(--gold);letter-spacing:1px}
+/* 內容三欄（簡介／心得／備註）加大留白，段落之間喘得過氣 */
+body.read-mode #f-synopsis,body.read-mode #f-review,body.read-mode #f-notes{
+  padding-top:2px;margin-bottom:4px}
+/* 唯讀時游標不再是文字輸入游標，避免看起來還能打字 */
+body.read-mode .field input,body.read-mode .field textarea{cursor:default}
+/* 區塊標題在閱讀視圖裡淡一點，讓內容當主角 */
+body.read-mode .sec-title{opacity:.75}
+
 /* ── 展示模式橫幅（v3.4，僅 github.io 顯示；雙主題只換變數）── */
 #demo-banner{display:none;background:var(--card-grad);border-bottom:1px solid var(--gold-dim);color:var(--ink2);font-size:12px;text-align:center;padding:4px 12px;letter-spacing:0.5px}
 body.demo #demo-banner{display:block}

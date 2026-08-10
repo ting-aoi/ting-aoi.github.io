@@ -8,6 +8,9 @@ var FT = window.FT;
 // SC2TC_MAP: { char: [variant1, variant2, ...] }
 let SC2TC_MAP = {};
 
+// v3.7a：載入失敗原本完全靜默，搜尋悄悄失去簡繁互通、使用者只覺得「搜不到」。
+// 記錄狀態供開機時提示（不擋流程，搜尋仍以原字比對）。
+FT.sc2tcReady = false;
 FT.loadSc2tc = async function() {
   try {
     const r = await fetch('./assets/sc2tc.json', { cache: 'force-cache' });
@@ -18,6 +21,7 @@ FT.loadSc2tc = async function() {
       if (k.length !== 1) return; // skip comment/meta keys
       SC2TC_MAP[k] = Array.isArray(v) ? v : [v];
     });
+    FT.sc2tcReady = Object.keys(SC2TC_MAP).length > 0;
   } catch {}
 };
 
@@ -68,13 +72,17 @@ function fullTextMatch(hayRaw, needleN) {
   return needleN.split('|').some(n => hay.includes(n));
 }
 
+// v3.7a：前綴只在「詞首」（字串開頭或空白後）才生效——否則 abc:def、a#b
+// 這類夾在字中間的符號會被誤當成前綴，把查詢拆爛。前導空白原樣保留，
+// 免得相鄰的兩個前綴黏成一個詞。
+const PREFIX = ch => new RegExp('(^|\\s)' + ch + '(\\S+)', 'g');
 FT.parseSearch = function(q) {
   const tags = [], chars = [], fulls = [], stats = [];
   const rest = q
-    .replace(/#(\S+)/g, (_, t)  => { tags.push(normalizeSearch(t));  return ''; })
-    .replace(/@(\S+)/g, (_, ch) => { chars.push(normalizeSearch(ch)); return ''; })
-    .replace(/~(\S+)/g, (_, f)  => { fulls.push(normalizeSearch(f)); return ''; })
-    .replace(/:(\S+)/g, (_, s)  => { stats.push(normalizeSearch(s)); return ''; })
+    .replace(PREFIX('#'), (_, sp, t)  => { tags.push(normalizeSearch(t));  return sp; })
+    .replace(PREFIX('@'), (_, sp, ch) => { chars.push(normalizeSearch(ch)); return sp; })
+    .replace(PREFIX('~'), (_, sp, f)  => { fulls.push(normalizeSearch(f)); return sp; })
+    .replace(PREFIX(':'), (_, sp, s)  => { stats.push(normalizeSearch(s)); return sp; })
     .trim();
   return { tags, chars, fulls, stats, rest: normalizeSearch(rest) };
 };
