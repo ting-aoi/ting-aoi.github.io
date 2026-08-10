@@ -62,9 +62,9 @@ booknotes-pwa/
 - **分支策略（Ting 2026-08 定案，勿再直推 main）**：repo 一站多專案——`futaba-bookshelf/`（本專案）與 `wasteland-ol/`（廢土 Online）路徑互不重疊，故各自開分支、合併永不衝突。
   - 雙葉書庫一律開發於分支 **`futaba-bookshelf`**；廢土走它自己的分支。
   - **`main` 是整合分支**，只接受各分支合併，不直接提交。
-  - **合併一律走 PR，且由 Ting 親自按合併**——AI 只負責推分支＋開 PR（草稿），不得自行合併或直推 main。Ting 要在手機上看完整 diff 才決定線上版何時更新。
-  - GitHub Pages 從 `main` 部署，所以線上版要更新就得合併進 main。
-  - 廢土的分支不歸雙葉這邊處理，勿主動合併或改動。
+  - **雙葉每次進版後自動合併進 main**（Ting 2026-08 指示）：在 `futaba-bookshelf` 提交並推送後，隨即 `git merge --no-ff futaba-bookshelf` 進 main 並推送，不必等 Ting 審。合併用 `--no-ff` 保留整合點，讓 main 的歷史讀起來是一連串「整合了哪個分支」。
+  - **本專案工作階段的權限邊界**：只能動 `futaba-bookshelf` 分支，以及把它合進 `main`。**不得改動 main 上的其他內容，不得碰廢土（`wasteland-ol/`）的分支或檔案。**
+  - GitHub Pages 從 `main` 部署，所以合併後線上版即更新。
 
 ### 測試雷點（血淚）
 - Node 22 `navigator` 唯讀：mock 要 `Object.defineProperty(globalThis,'navigator',...)`
