@@ -1,0 +1,41 @@
+{
+  "schemaVersion": 1,
+  "_note": "時間與生存循環。AP 表、過夜結算、飢渴 debuff。v0.1 為提案值，待 Ting 確認。",
+  "phases": [
+    { "id": "morning", "label": "早", "ap": 2 },
+    { "id": "noon",    "label": "中", "ap": 3 },
+    { "id": "night",   "label": "晚", "ap": 1 }
+  ],
+  "start": {
+    "day": 1,
+    "phase": "morning",
+    "food": 10,
+    "water": 10
+  },
+  "overnight": {
+    "food": -3,
+    "water": -4,
+    "_note": "由晚→隔日早時結算一次；不足則扣到 0 並掛對應 debuff。"
+  },
+  "debuffs": {
+    "hunger": {
+      "label": "飢餓",
+      "attrPenaltyPct": 30,
+      "hpMaxLossPctPerDay": 5,
+      "_trigger": "food === 0"
+    },
+    "thirst": {
+      "label": "口渴",
+      "attrPenaltyPct": 30,
+      "hpMaxLossPctPerDay": 5,
+      "_trigger": "water === 0"
+    }
+  },
+  "hpMaxLossCapPct": 60,
+  "_penaltyNote": "多個 debuff 的 attrPenaltyPct 以「整數百分比相加」後一次套用：floor(base × (100 − Σpct) / 100)。嚴禁浮點連乘，會產生累積誤差。",
+  "restore": {
+    "hpPerNight": 3,
+    "stPerNight": 999,
+    "_note": "無 debuff 過夜時的回復；體力設極大值代表睡飽即全滿（實際夾在 stMax）。"
+  }
+}

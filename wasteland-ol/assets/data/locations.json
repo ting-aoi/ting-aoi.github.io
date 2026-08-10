@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "_note": "探索地點表。內容一律由 Ting 提供，AI 不得生成佔位地點（鎖定決策）。",
+  "_fields": {
+    "id": "字串，唯一鍵",
+    "name": "顯示名稱",
+    "desc": "說明文字",
+    "actions": "整數，一趟探索的行動次數（AP 消耗 = ceil(actions / 2)，零頭無條件進位）",
+    "encounters": "陣列，[{ monsterId, weight }]，權重抽取",
+    "scavenge": "陣列，[{ itemId, min, max, weight }]，拾荒產出",
+    "encounterChance": "整數百分比，單次行動遭遇怪物的機率，其餘為拾荒"
+  },
+  "_example": {
+    "id": "example_only_not_shipped",
+    "name": "（範例，不是遊戲內容）",
+    "actions": 4,
+    "encounterChance": 40,
+    "encounters": [{ "monsterId": "example", "weight": 1 }],
+    "scavenge": [{ "itemId": "example", "min": 1, "max": 2, "weight": 1 }]
+  },
+  "locations": []
+}

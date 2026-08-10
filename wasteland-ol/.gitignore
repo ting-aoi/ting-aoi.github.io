@@ -1,0 +1,20 @@
+# 打包成品
+*.zip
+
+# shttps 備份目錄（伺服器端存檔，不入庫）
+save/
+
+# 系統與編輯器
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+
+# Node（測試用，本專案無相依套件）
+node_modules/

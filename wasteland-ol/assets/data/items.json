@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "_note": "道具表。內容一律由 Ting 提供，AI 不得生成佔位道具（鎖定決策）。木頭／石頭／廢鐵等資源在這裡登錄為個別道具——「材料」只是描述性標籤，不是遊戲物件。",
+  "_fields": {
+    "id": "字串，唯一鍵，如 'scrap_iron'",
+    "name": "顯示名稱",
+    "kind": "'material' | 'food' | 'water' | 'consumable' | 'gear'",
+    "desc": "說明文字",
+    "stack": "整數，單格堆疊上限（選填，預設無限）",
+    "use": "選填，使用效果 { hp, st, food, water }，戰鬥中使用會耗掉一整個回合"
+  },
+  "_example": {
+    "id": "example_only_not_shipped",
+    "name": "（範例，不是遊戲內容）",
+    "kind": "material",
+    "desc": "此區塊僅示範欄位，不會被載入。"
+  },
+  "items": []
+}
