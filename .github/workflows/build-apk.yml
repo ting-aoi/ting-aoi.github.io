@@ -95,6 +95,17 @@ jobs:
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
         run: gradle assembleRelease --no-daemon
 
+      - name: 回報簽章狀態（未簽章的 APK 裝不起來，要講清楚）
+        run: |
+          APK=$(ls android/app/build/outputs/apk/release/*.apk 2>/dev/null | head -1)
+          if [ -z "$APK" ]; then echo "::error::找不到 APK"; exit 1; fi
+          echo "產物：$(basename "$APK")  $(du -h "$APK" | cut -f1)"
+          if [ -f android/app/keystore.jks ]; then
+            echo "✅ 已簽章，可直接安裝"
+          else
+            echo "::warning::這是未簽章 APK，**無法安裝**。請在 repo 設定 KEYSTORE_BASE64／KEYSTORE_PASSWORD／KEY_ALIAS／KEY_PASSWORD 四個 Secrets 後重跑。"
+          fi
+
       - name: 上傳 APK
         uses: actions/upload-artifact@v4
         with:
