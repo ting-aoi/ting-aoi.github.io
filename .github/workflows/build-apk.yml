@@ -38,8 +38,9 @@ jobs:
       - name: 檔案伺服器測試（25 項）
         working-directory: futaba-bookshelf/android/server-test
         run: |
-          javac -nowarn -d out ../app/src/main/java/tw/ting/futaba/bookshelf/FileApiServer.java ServerTest.java
-          java -cp out ServerTest
+          SRC=../app/src/main/java/tw/ting/futaba/bookshelf
+          javac -nowarn -encoding UTF-8 -d out "$SRC/MiniHttp.java" "$SRC/FileApiServer.java" ServerTest.java
+          java -Dfile.encoding=UTF-8 -cp out ServerTest
 
       - name: 組裝網頁資產進 APK
         run: |

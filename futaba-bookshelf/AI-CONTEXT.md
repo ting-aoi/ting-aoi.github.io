@@ -92,7 +92,9 @@ booknotes-pwa/
   1. **字體** — `assets/css/fonts.css` 是抽換層，`main.css` 只 `@import` 它；CI 建置時整個換成 `android/fonts/fonts-local.css`（內建 196 個 woff2 分片）。**不可把 @import 搬回 main.css**，搬回去 APK 離線就沒字體。
   2. **匯出** — `FT.saveBlob(blob, filename)`（storage.js）是全站唯一存檔出口：APK 走 `window.FutabaNative.saveBase64` 存到「下載」資料夾（WebView 不支援 blob: 下載），瀏覽器走 `<a download>`。新增匯出功能一律呼叫它，勿自組 `<a download>`（test/run.js 有斷言把關「全站只有一處 `.download =`」）。
   3. **Service Worker** — `FT.initPWA` 偵測到 `window.FutabaNative` 即跳過註冊（資產已內建，SW 只會卡版本）。
-- `android/FileApiServer.java` 是**純 Java 標準函式庫**（`com.sun.net.httpserver`），只綁 127.0.0.1，介面與 shttps 完全一致，所以 `storage.js` 一行都不必改。改它必跑 `android/server-test`（25 項）。
+- `android/FileApiServer.java` 零第三方相依，只綁 127.0.0.1，介面與 shttps 完全一致，所以 `storage.js` 一行都不必改。改它必跑 `android/server-test`（25 項）。
+- **傳輸層是自寫的 `MiniHttp.java`**（`java.net.ServerSocket`）：`com.sun.net.httpserver` 是 JDK 模組、**Android 沒有**，桌面 server-test 會過但 APK 編譯必炸（v3.8 首次建置踩到）。MiniHttp 刻意只實作用到的 13 個方法且形狀與 com.sun 相同，所以 FileApiServer 的 handler 與 multipart 邏輯一行未改、25 項測試原封不動仍有效。
+- **Kotlin stdlib 重複類別**：androidx 相依鏈會同時帶進新版 `kotlin-stdlib` 與舊版 `kotlin-stdlib-jdk7/jdk8`（1.8 起內容已併入本體），`checkReleaseDuplicateClasses` 會擋建置；`app/build.gradle` 以 `configurations.all { exclude ... }` 排掉舊的。
 - **CI**：`.github/workflows/build-apk.yml`（在 **repo 根目錄**，GitHub 只認那裡），只在 `futaba-bookshelf/**` 變動時觸發，避免廢土推 main 也建 APK。流程＝網頁測試 → 伺服器測試 → 組裝資產 → 字體抽換驗證 → 帶入版本 → 簽章 → 上傳 artifact。
 - 需要的 Secrets：`KEYSTORE_BASE64`、`KEYSTORE_PASSWORD`、`KEY_ALIAS`、`KEY_PASSWORD`。缺了會出未簽章 APK（裝不起來）。
 - 資料位置：`Android/data/tw.ting.futaba.bookshelf/files/data/`。

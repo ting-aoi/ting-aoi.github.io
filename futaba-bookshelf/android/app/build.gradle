@@ -41,6 +41,14 @@ android {
     }
 }
 
+// Kotlin 1.8 起 kotlin-stdlib 已把 jdk7/jdk8 的內容併進本體，那兩個獨立 artifact 變成
+// 冗餘。androidx 相依鏈同時帶進新版 kotlin-stdlib 與舊版 kotlin-stdlib-jdk7/jdk8 時，
+// 兩邊都有同一批類別，checkReleaseDuplicateClasses 就會擋下建置。排掉舊的即可。
+configurations.all {
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk7'
+    exclude group: 'org.jetbrains.kotlin', module: 'kotlin-stdlib-jdk8'
+}
+
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.activity:activity:1.9.2'

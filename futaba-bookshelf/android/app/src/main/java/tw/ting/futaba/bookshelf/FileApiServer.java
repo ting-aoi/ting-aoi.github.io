@@ -1,7 +1,9 @@
 package tw.ting.futaba.bookshelf;
 
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpServer;
+// v3.8：com.sun.net.httpserver 是 JDK 模組，Android 執行期沒有——改用同套件的
+// MiniHttp 薄殼（java.net.ServerSocket 實作），handler 邏輯與測試皆不受影響。
+import tw.ting.futaba.bookshelf.MiniHttp.HttpExchange;
+import tw.ting.futaba.bookshelf.MiniHttp.HttpServer;
 
 import java.io.*;
 import java.net.InetSocketAddress;
