@@ -77,7 +77,8 @@ android/                          Android 專案（見下）
 
 - `MainActivity.java` — WebView 殼：直式鎖定、`onShowFileChooser`（匯入選檔）、
   `FutabaNative.saveBase64`（匯出存檔，因 WebView 不支援 blob: 下載）。
-- `FileApiServer.java` — **純 Java 標準函式庫**（`com.sun.net.httpserver`），無第三方相依。
+- `FileApiServer.java` — 零第三方相依。傳輸層是同套件的 `MiniHttp.java`（`java.net.ServerSocket`）。
+  **不要改回 `com.sun.net.httpserver`**：那是 JDK 模組，Android 執行期沒有，桌面測試會過但 APK 編譯必炸（v3.8 踩過）。
   只綁 `127.0.0.1`，同時代管 APK 內網頁資產（`assets/www/`）與 App 專屬目錄的 `data/`。
   介面與 shttps 完全一致，因此網頁端 `storage.js` 一行都不必改。
 - 網頁端判斷 APK 環境：`window.FutabaNative` 存在即是。
