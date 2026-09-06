@@ -1,0 +1,47 @@
+plugins { id 'com.android.application' }
+
+android {
+    namespace 'tw.ting.futaba.bookshelf'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId "tw.ting.futaba.bookshelf"
+        minSdk 24
+        targetSdk 34
+        versionCode 1          // 每次發版 +1（由 CI 依 web 版本自動帶入）
+        versionName "3.3"
+    }
+
+    signingConfigs {
+        release {
+            // 由 GitHub Actions 從 Secrets 產生；本機建置時若無金鑰則略過
+            def ksFile = file("keystore.jks")
+            if (ksFile.exists()) {
+                storeFile ksFile
+                storePassword System.getenv("KEYSTORE_PASSWORD") ?: ""
+                keyAlias System.getenv("KEY_ALIAS") ?: "futaba"
+                keyPassword System.getenv("KEY_PASSWORD") ?: ""
+            }
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false          // 純 WebView 殼，無需混淆；保留可讀堆疊
+            signingConfig signingConfigs.release
+        }
+        debug {
+            applicationIdSuffix ""       // 與正式版同套件名，避免資料目錄分裂
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.activity:activity:1.9.2'
+}

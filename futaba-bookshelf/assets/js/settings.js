@@ -369,12 +369,8 @@ FT.exportSettings = function() {
   _download(blob, `雙葉書庫_設定_${FT.nowStamp()}.json`);
 };
 
-function _download(blob, filename) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = filename; a.click();
-  URL.revokeObjectURL(url);
-}
+// v3.8：改走 FT.saveBlob 統一出口（APK 在 WebView 內無法用 blob: 下載）
+function _download(blob, filename) { FT.saveBlob(blob, filename); }
 
 // ── Import functions ──
 

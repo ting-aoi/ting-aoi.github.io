@@ -518,6 +518,7 @@ if (location.hash === '#update') {
 let _deferredPrompt = null;
 FT.initPWA = function() {
   if (!('serviceWorker' in navigator)) return;
+  if (window.FutabaNative) return;   // APK 版：資產已內建，跳過 SW 以免快取卡住版本
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('./sw.js', { updateViaCache: 'none' }).then(reg => {
       // Immediately check for updates + on every tab focus
