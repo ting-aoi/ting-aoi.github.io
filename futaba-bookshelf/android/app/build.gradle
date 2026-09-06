@@ -28,7 +28,13 @@ android {
     buildTypes {
         release {
             minifyEnabled false          // 純 WebView 殼，無需混淆；保留可讀堆疊
-            signingConfig signingConfigs.release
+            // 只有金鑰真的存在時才掛上簽章設定。
+            // 原本無條件掛，沒金鑰時 signingConfigs.release 是空的，AGP 會在
+            // packageRelease 報 'missing required property storeFile' 而整個失敗——
+            // 與「無金鑰則輸出未簽章 APK」的原意相反（v3.8 首次建置踩到）。
+            if (file("keystore.jks").exists()) {
+                signingConfig signingConfigs.release
+            }
         }
         debug {
             applicationIdSuffix ""       // 與正式版同套件名，避免資料目錄分裂
