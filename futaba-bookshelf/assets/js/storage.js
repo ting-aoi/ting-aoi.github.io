@@ -209,10 +209,28 @@ FT.exportBook = function(id) {
   const b = id?FT.books[id]:(FT.activeId?FT.books[FT.activeId]:null);
   if (!b) return;
   const blob = new Blob([FT.bookToMd(b)],{type:'text/markdown;charset=utf-8'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href=url; a.download=FT.sanitize(b.title||'未命名')+'.md'; a.click();
-  URL.revokeObjectURL(url);
+  FT.saveBlob(blob, FT.sanitize(b.title||'未命名')+'.md');
+};
+
+// v3.8 統一下載入口：APK（WebView）走原生橋接存到「下載」資料夾，
+// 一般瀏覽器維持 <a download>。WebView 不支援 blob: 下載，故必須分流。
+// 這是全站唯一的存檔出口——新增匯出功能一律呼叫它，不要自己組 <a download>。
+FT.saveBlob = function(blob, filename) {
+  if (window.FutabaNative && window.FutabaNative.saveBase64) {
+    const fr = new FileReader();
+    fr.onload = () => {
+      const b64 = String(fr.result).split(',')[1] || '';
+      const msg = window.FutabaNative.saveBase64(filename, b64);
+      FT.toast(msg || ('已儲存 ' + filename));
+    };
+    fr.onerror = () => FT.toast('儲存失敗');
+    fr.readAsDataURL(blob);
+    return;
+  }
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
 };
 
 // ── Paths ──

@@ -27,7 +27,12 @@ chk('v3.0a：stat-num 單一定義且為 Caveat', (css.match(/\.stat-num\{/g) ||
 chk('v3.0a：隨筆數字微傾與夜間微光', /\.stat-num\{[^}]*rotate\(-2\.5deg\)[^}]*var\(--glow\)/.test(css));
 chk('v3.0a：「書庫」不用斜體', css.includes('.logo span{font-weight:400') && !/\.logo span\{[^}]*italic/.test(css));
 chk('v3.0：Playfair 全站退役', !css.includes('Playfair') && !html.includes('Playfair'));
-chk('v3.0：手寫字體與 Caveat 已載入', css.includes('LXGW+WenKai+TC') && css.includes('Caveat'));
+// v3.8 起字體來源在 fonts.css（抽換層），main.css 只負責使用
+chk('v3.0：手寫字體與 Caveat 已載入', (() => {
+  const fonts = read('assets/css/fonts.css');
+  return fonts.includes('LXGW+WenKai+TC') && fonts.includes('Caveat')
+    && css.includes("'LXGW WenKai TC'") && css.includes("'Caveat'");
+})());
 chk('v3.0：頂欄側欄用皮革變數（日夜恆深）', css.includes('--leather') && (css.match(/background:var\(--leather\)/g) || []).length >= 2);
 chk('v3.0：reduced-motion 總開關', css.includes('prefers-reduced-motion'));
 chk('v3.5：動效 token 齊備', css.includes('--dur-fast') && css.includes('--ease-spring'));
@@ -63,6 +68,33 @@ chk('v3.7a：閱讀視圖靠 body.read-mode（不做 DOM 手術）',
   && css.includes('body.read-mode .field textarea'));
 chk('v3.7a：切換閱讀模式後重算長文高度（否則字級變大會截斷）',
   read('assets/js/editor.js').includes('FT.resizeLongFields();'));
+// ── APK 相容層（v3.8）：這四條護住「網頁與 APK 共用同一份原始碼」 ──
+chk('v3.8：字體來源獨立成抽換層（APK 靠換掉這檔才有內建字體）', (() => {
+  const f = read('assets/css/fonts.css');
+  return /^@import url\('fonts\.css'\)/.test(css)          // main.css 只引用抽換層
+    && f.includes('fonts.googleapis.com')                  // 網頁版仍走 CDN
+    && !css.includes('fonts.googleapis.com');              // 不得搬回 main.css
+})());
+chk('v3.8：FT.saveBlob 是全站唯一存檔出口', (() => {
+  const st = read('assets/js/storage.js'), se = read('assets/js/settings.js');
+  return st.includes('FT.saveBlob = function') && st.includes('FutabaNative')
+    && se.includes('function _download(blob, filename) { FT.saveBlob(blob, filename); }');
+})());
+chk('v3.8：除 saveBlob 外無人自組 <a download>', (() => {
+  const src = ['storage','settings','ui','pages','editor','app','search']
+    .map(m => read('assets/js/' + m + '.js')).join('\n');
+  // a.download 只該出現在 saveBlob 的瀏覽器分支那一次
+  return (src.match(/\.download\s*=/g) || []).length === 1;
+})());
+chk('v3.8：APK 環境跳過 Service Worker 註冊', (() => {
+  const u = read('assets/js/ui.js');
+  const i = u.indexOf('FT.initPWA');
+  return u.slice(i, i + 260).includes('if (window.FutabaNative) return;');
+})());
+chk('v3.8：bump.py 網頁包排除 android 與 CI', (() => {
+  const b = read('bump.py');
+  return b.includes("'android'") && b.includes("'.github'");
+})());
 chk('v3.6b：磚牆按鈕 color 明確（不掉 UA 黑）', css.includes('.app-tile{color:var(--ink)}'));
 chk('v3.6b：圖示金色點綴規則齊備', css.includes('.app-tile-icon,.sec-title .ic'));
 chk('v3.6b：齒輪已圓角化（Q 貝茲曲線）', /id="i-gear"[^>]*><path d="M[\d. ]+Q/.test(html));

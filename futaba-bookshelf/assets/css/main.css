@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Caveat:wght@500;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap&font-display=swap');
+@import url('fonts.css');   /* 字體來源：網頁版走 CDN，APK 版由建置流程換成內建字體 */
 
 /* ── VARIABLES ── */
 /* v3.0 琥珀廳：日=羊皮紙+銅金（拉開窗簾的閱覽室）；夜=深咖啡+燙金（桌上一盞燈） */

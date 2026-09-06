@@ -136,7 +136,8 @@ def pack(version):
     for old_zip in ROOT.glob('futaba-pwa*.zip'):
         old_zip.unlink()
     skip = {'.pyc', '.bak', '.zip'}
-    skip_names = {'__pycache__', '.git'}
+    # android/ 與 CI 設定不進網頁部署包（APK 專用，shttps 不需要）
+    skip_names = {'__pycache__', '.git', 'android', '.github'}
     # Files to exclude from the distributable package
     skip_files = {'data/index.json', 'data/settings.json'}
     with zipfile.ZipFile(out, 'w', zipfile.ZIP_DEFLATED) as zf:

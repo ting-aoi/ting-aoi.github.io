@@ -19,3 +19,19 @@ __pycache__/
 
 # Node（測試用，本專案無相依套件）
 node_modules/
+
+# ── APK 相關（v3.8）──
+# 簽章金鑰：只存在 GitHub Secrets，絕不進版控。
+# 鐵律：金鑰一旦換掉，使用者只能解除安裝重裝，資料全失。
+keystore.base64.txt
+*.jks
+*.keystore
+*.p12
+
+# Android 建置產物
+android/build/
+android/app/build/
+android/.gradle/
+android/local.properties
+android/app/src/main/assets/www/
+android/server-test/out/

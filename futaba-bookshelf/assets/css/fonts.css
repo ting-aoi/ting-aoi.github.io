@@ -1,0 +1,6 @@
+/* 字體來源抽換層（v3.8）
+   網頁版：走 Google Fonts CDN，由 SW 的 futaba-fonts 快取，離線可用。
+   APK 版：建置流程把本檔整個換成 android/fonts/fonts-local.css（內建字體）。
+   ⚠ main.css 只以 @import 引用本檔，不要把 @import 搬回 main.css——
+     搬回去 APK 就換不掉來源，離線會掉回系統字體。 */
+@import url('https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Caveat:wght@500;700&family=Noto+Sans+TC:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap&font-display=swap');

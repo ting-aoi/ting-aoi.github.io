@@ -1,5 +1,5 @@
 # AI-CONTEXT — 雙葉書庫（Futaba）
-> 交接文件 · 對應版本 **v3.7a** · 供 AI 助手跨對話接手用。動工前先讀完本檔。
+> 交接文件 · 對應版本 **v3.8** · 供 AI 助手跨對話接手用。動工前先讀完本檔。
 
 ## 0. 一句話
 個人書評 PWA：vanilla JS、全域 `FT` 命名空間、shttps 本地檔案伺服器（localhost:8080）做資料持久化，Android + Brave 為主要環境，使用者 Ting，全程繁體中文。
@@ -11,6 +11,8 @@
 4. **bump.py 版本錨定 `>vX.X<`**：HTML 註解等處不得出現同格式字串。
 5. **側欄與頂欄永遠深色**（`--leather`），不隨日夜翻轉；側欄完成度符號 `badge-r/badge-y` 用固定亮色。
 6. **確認後執行**：重大設計先提案、Ting 核可才動工；鎖定決策不得擅自回退。
+7. **網頁端不得為 APK 分岔**（v3.8）：網頁版與 APK 共用**同一份**原始碼，環境差異一律靠建置流程抽換或執行期 `window.FutabaNative` 判斷。曾因分家維護導致 APK 卡在一個「v3.3」而與網頁線同名不同物，勿重蹈。
+8. **APK 簽章金鑰不可更換**：換了使用者只能解除安裝重裝、資料全失。金鑰只存在 GitHub Secrets，`.gitignore` 已擋 `*.jks`/`keystore.*`，任何情況不得提交。
 
 ## 2. 檔案結構與模組
 ```
@@ -81,6 +83,20 @@ booknotes-pwa/
 - **圖示系統**（v3.6，取代舊「頂欄符號＋側欄 emoji」慣例——該慣例已由 Ting 明確推翻）：35 顆內嵌 SVG sprite 在 index.html `<body>` 開頭（`#i-<name>`），線條 1.7/圓端點/24 網格；`svg.ic` 尺寸吃 font-size、顏色吃 currentColor（雙主題免分版）。JS 端用 `FT.icon(name)`（storage.js）產出 `<use>` 標記——**只能用於 innerHTML 路徑，textContent 塞不進去**（v3.6 曾把排序鈕 textContent 改 innerHTML）。原生對話框（alert/confirm）內文字的 emoji 保留。★ 星等、◆◇✓ 完成度符號、聊天式 ✕/＋ 小字元屬**排版系統**，不在圖示範圍。PWA icon-192/512＋mask 版為 **v3.2 原版琥珀雙葉 PNG（Ting 指定保留，勿再重繪）**——v3.6 曾重繪、v3.6a 依 Ting 要求還原。
 - 星等一律 `.gilt-star` 金屬漸層（渲染點：ui.js 首頁/側欄、pages.js 作者/統計）。
 - 毛玻璃黏頂面板（設定分頁列、書庫篩選列）：`--paper-glass` + blur + `--gold-dim` 邊框，z-index:10（**必須低於側欄 15**，v3.1 曾出過圖層事故）。
+
+## 5.5 APK 版（v3.8 起）
+
+同一份網頁原始碼，兩種部署形態：網頁版放 shttps／GitHub Pages；APK 版是 `android/` 的 WebView 殼 ＋ 內建迷你檔案伺服器，離線獨立運作。
+
+- **三處環境差異**，全部不分岔原始碼：
+  1. **字體** — `assets/css/fonts.css` 是抽換層，`main.css` 只 `@import` 它；CI 建置時整個換成 `android/fonts/fonts-local.css`（內建 196 個 woff2 分片）。**不可把 @import 搬回 main.css**，搬回去 APK 離線就沒字體。
+  2. **匯出** — `FT.saveBlob(blob, filename)`（storage.js）是全站唯一存檔出口：APK 走 `window.FutabaNative.saveBase64` 存到「下載」資料夾（WebView 不支援 blob: 下載），瀏覽器走 `<a download>`。新增匯出功能一律呼叫它，勿自組 `<a download>`（test/run.js 有斷言把關「全站只有一處 `.download =`」）。
+  3. **Service Worker** — `FT.initPWA` 偵測到 `window.FutabaNative` 即跳過註冊（資產已內建，SW 只會卡版本）。
+- `android/FileApiServer.java` 是**純 Java 標準函式庫**（`com.sun.net.httpserver`），只綁 127.0.0.1，介面與 shttps 完全一致，所以 `storage.js` 一行都不必改。改它必跑 `android/server-test`（25 項）。
+- **CI**：`.github/workflows/build-apk.yml`（在 **repo 根目錄**，GitHub 只認那裡），只在 `futaba-bookshelf/**` 變動時觸發，避免廢土推 main 也建 APK。流程＝網頁測試 → 伺服器測試 → 組裝資產 → 字體抽換驗證 → 帶入版本 → 簽章 → 上傳 artifact。
+- 需要的 Secrets：`KEYSTORE_BASE64`、`KEYSTORE_PASSWORD`、`KEY_ALIAS`、`KEY_PASSWORD`。缺了會出未簽章 APK（裝不起來）。
+- 資料位置：`Android/data/tw.ting.futaba.bookshelf/files/data/`。
+- **尚未實機驗證**：Android 那層從未在真機跑過，CI 首次執行可能有錯。優先懷疑 AGP/Gradle 版本相容、`compileSdk`／相依版本、資源檔缺漏；`FileApiServer` 已用真實 HTTP 測過，優先不動它。
 
 ## 6. 頁面清單（11 頁）與要點
 | 頁 | 要點 |

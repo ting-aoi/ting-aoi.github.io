@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 啟動畫面配色對齊琥珀廳夜間主題 -->
+    <style name="Theme.Futaba" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:windowBackground">@color/futaba_bg</item>
+        <item name="android:statusBarColor">@color/futaba_leather</item>
+        <item name="android:navigationBarColor">@color/futaba_bg</item>
+    </style>
+</resources>
