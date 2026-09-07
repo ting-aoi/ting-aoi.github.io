@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- 不需要網路權限：伺服器只綁 127.0.0.1，字體與資產全部內建 -->
+    <!-- ⚠ 這個權限不能拿掉，即使 App 完全不連外。
+         Android 的 INTERNET 權限管的是 socket() 系統呼叫本身，不是「有沒有連外」：
+         沒有它的 App 不屬於 inet group，連綁 127.0.0.1 的監聽 socket 都會被核心
+         擋下，內建伺服器啟動時直接拿到 EPERM，整個 App 開不起來（v3.8 首次安裝踩到，
+         當時 Manifest 註解正是寫「不需要網路權限：伺服器只綁 127.0.0.1」）。
+         Android 沒有「僅限 loopback」的細粒度權限，這是唯一解。
+         對外連線由 network_security_config 封死（只放行 127.0.0.1／localhost 明文，
+         其餘一律禁止），實際隱私姿態不變。 -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"

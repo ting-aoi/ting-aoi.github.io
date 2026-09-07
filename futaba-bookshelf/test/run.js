@@ -91,6 +91,21 @@ chk('v3.8：APK 環境跳過 Service Worker 註冊', (() => {
   const i = u.indexOf('FT.initPWA');
   return u.slice(i, i + 260).includes('if (window.FutabaNative) return;');
 })());
+// ── Android 層的靜態守門（v3.8a）：兩個都是「桌面測試全過、裝到手機才炸」的雷 ──
+chk('v3.8a：Manifest 有 INTERNET 權限（缺了連 loopback socket 都會 EPERM）',
+  read('android/app/src/main/AndroidManifest.xml').includes('android.permission.INTERNET'));
+chk('v3.8a：Android 原始碼不得 import com.sun.*（JDK 專屬，Android 沒有）', (() => {
+  const dir = 'android/app/src/main/java/tw/ting/futaba/bookshelf';
+  return ['MiniHttp.java', 'FileApiServer.java', 'MainActivity.java'].every(f => {
+    const src = read(dir + '/' + f)
+      .split('\n').filter(l => !l.trim().startsWith('//')).join('\n');
+    return !/^\s*import\s+com\.sun\./m.test(src);
+  });
+})());
+chk('v3.8a：對外連線仍封死（只放行 loopback 明文）', (() => {
+  const c = read('android/app/src/main/res/xml/network_security_config.xml');
+  return c.includes('127.0.0.1') && /base-config[^>]*cleartextTrafficPermitted="false"/.test(c);
+})());
 chk('v3.8：bump.py 網頁包排除 android 與 CI', (() => {
   const b = read('bump.py');
   return b.includes("'android'") && b.includes("'.github'");
