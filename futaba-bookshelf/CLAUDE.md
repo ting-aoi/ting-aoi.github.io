@@ -26,7 +26,7 @@
 ## 必跑的驗證
 
 ```bash
-node test/run.js          # 網頁回歸測試（124 條，涵蓋歷次修過的 bug）
+node test/run.js          # 網頁回歸測試（127 條，涵蓋歷次修過的 bug）
 ```
 
 改動 `android/app/src/main/java/.../FileApiServer.java` 後**務必**加跑：
@@ -86,9 +86,16 @@ android/                          Android 專案（見下）
   刪 `sw.js`、資產複製到 `android/app/src/main/assets/www/`。
 - 資料位置：`Android/data/tw.ting.futaba.bookshelf/files/data/`。
 
-**尚未實機驗證**：Android 那層（Gradle 設定、Manifest、WebView 行為）從未編譯過，
-CI 首次執行可能有錯。修時請優先懷疑：AGP/Gradle 版本相容、`compileSdk`/相依版本、
-資源檔缺漏。`FileApiServer` 已用真實 HTTP 請求測過，優先不動它。
+**實機驗證狀態（v3.8a）**：已在真機安裝並開啟過，過程抓到兩個「桌面全綠、上機才炸」的雷，
+都已修好並加了靜態守門（test/run.js）：
+
+1. `com.sun.net.httpserver` 是 JDK 模組、Android 沒有 → 改用自寫的 `MiniHttp.java`。
+   桌面 server-test 會過，因為它跑在 JDK 上——**綠燈不代表 Android 可行**。
+2. Manifest 少了 `INTERNET` 權限 → 內建伺服器 `socket()` 直接 EPERM，App 開不起來。
+   該權限管的是 socket 系統呼叫本身，**不是**「有沒有連外」；只綁 127.0.0.1 也一樣要。
+
+教訓：Android 層的問題多半是「執行期環境差異」，桌面測試驗不到。改動 `android/` 後
+除了跑 server-test，最好實機裝一次。
 
 ## 環境需求
 

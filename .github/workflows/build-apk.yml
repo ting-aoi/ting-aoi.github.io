@@ -20,6 +20,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          # versionCode 取自 git rev-list --count HEAD；預設的淺層 clone 只有 1 個
+          # commit，會讓每次建置都算出 versionCode=1，Android 之後拒絕升級安裝。
+          fetch-depth: 0
 
       - name: 設定 JDK 17
         uses: actions/setup-java@v4

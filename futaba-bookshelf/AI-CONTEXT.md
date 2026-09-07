@@ -1,5 +1,5 @@
 # AI-CONTEXT — 雙葉書庫（Futaba）
-> 交接文件 · 對應版本 **v3.8** · 供 AI 助手跨對話接手用。動工前先讀完本檔。
+> 交接文件 · 對應版本 **v3.8a** · 供 AI 助手跨對話接手用。動工前先讀完本檔。
 
 ## 0. 一句話
 個人書評 PWA：vanilla JS、全域 `FT` 命名空間、shttps 本地檔案伺服器（localhost:8080）做資料持久化，Android + Brave 為主要環境，使用者 Ting，全程繁體中文。
@@ -94,6 +94,7 @@ booknotes-pwa/
   3. **Service Worker** — `FT.initPWA` 偵測到 `window.FutabaNative` 即跳過註冊（資產已內建，SW 只會卡版本）。
 - `android/FileApiServer.java` 零第三方相依，只綁 127.0.0.1，介面與 shttps 完全一致，所以 `storage.js` 一行都不必改。改它必跑 `android/server-test`（25 項）。
 - **傳輸層是自寫的 `MiniHttp.java`**（`java.net.ServerSocket`）：`com.sun.net.httpserver` 是 JDK 模組、**Android 沒有**，桌面 server-test 會過但 APK 編譯必炸（v3.8 首次建置踩到）。MiniHttp 刻意只實作用到的 13 個方法且形狀與 com.sun 相同，所以 FileApiServer 的 handler 與 multipart 邏輯一行未改、25 項測試原封不動仍有效。
+- **`INTERNET` 權限不可拿掉**（v3.8a 實機踩到）：Android 的 `android.permission.INTERNET` 管的是 **`socket()` 系統呼叫本身**，不是「有沒有連外」——沒有它的 App 不屬於 inet group，連綁 `127.0.0.1` 的監聽 socket 都被核心擋下，內建伺服器拿到 EPERM、整個 App 開不起來。Manifest 原本的註解「不需要網路權限：伺服器只綁 127.0.0.1」正是害它被漏掉的原因。Android 沒有「僅限 loopback」的細粒度權限，這是唯一解；對外連線由 `network_security_config` 封死（只放行 loopback 明文），隱私姿態不變。test/run.js 有三條靜態守門把關（權限存在、不得 import com.sun.*、對外仍封死）。
 - **Kotlin stdlib 重複類別**：androidx 相依鏈會同時帶進新版 `kotlin-stdlib` 與舊版 `kotlin-stdlib-jdk7/jdk8`（1.8 起內容已併入本體），`checkReleaseDuplicateClasses` 會擋建置；`app/build.gradle` 以 `configurations.all { exclude ... }` 排掉舊的。
 - **CI**：`.github/workflows/build-apk.yml`（在 **repo 根目錄**，GitHub 只認那裡），只在 `futaba-bookshelf/**` 變動時觸發，避免廢土推 main 也建 APK。流程＝網頁測試 → 伺服器測試 → 組裝資產 → 字體抽換驗證 → 帶入版本 → 簽章 → 上傳 artifact。
 - 需要的 Secrets：`KEYSTORE_BASE64`、`KEYSTORE_PASSWORD`、`KEY_ALIAS`、`KEY_PASSWORD`。缺了會出未簽章 APK（裝不起來）。
